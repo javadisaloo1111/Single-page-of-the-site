@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101615">
+  <meta name="description" content="تجربه‌ای تعاملی و روایت‌محور از سامانه‌ی صنعتی ساخت کلیشه‌ی فوتوپلیمری.">
+  <title>سامانه‌ی ساخت کلیشه | فناوری چاپ دقیق</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    @property --glow-x {
+      syntax: "<percentage>";
+      inherits: true;
+      initial-value: 28%;
+    }
+    :root {
+      color-scheme: dark;
+      --paper: #101615;
+      --paper-deep: #151e1b;
+      --ink: #edf0eb;
+      --ink-soft: #b2bbb4;
+      --muted: #7f8b84;
+      --line: rgba(239, 242, 237, .12);
+      --line-strong: rgba(239, 242, 237, .22);
+      --accent: #ce765b;
+      --accent-dark: #e3a08a;
+      --graphite: #0b100f;
+      --white: #f4f3ee;
+      --button-bg: #e8ebe5;
+      --button-ink: #151b18;
+      --product-light: #f7f6f2;
+      --header-h: 76px;
+      --shell: min(100% - 96px, 1440px);
+      --ease: cubic-bezier(.22, .65, .2, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: var(--header-h); }
+    body {
+      min-width: 320px;
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Vazirmatn", Tahoma, sans-serif;
+      font-weight: 400;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; -webkit-tap-highlight-color: transparent; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    img { display: block; max-width: 100%; }
+    ::selection { color: var(--white); background: var(--accent); }
+    .shell { width: var(--shell); margin-inline: auto; }
+    .icon { width: 18px; height: 18px; flex: 0 0 auto; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+    .eyebrow::before {
+      width: 7px;
+      height: 7px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(189, 99, 75, .1);
+      content: "";
+    }
+    .button {
+      position: relative;
+      isolation: isolate;
+      display: inline-flex;
+      min-height: 52px;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      padding: 0 20px;
+      overflow: hidden;
+      border: 1px solid transparent;
+      border-radius: 2px;
+      background: var(--button-bg);
+      color: var(--button-ink);
+      font-size: 11px;
+      font-weight: 500;
+      transition: color .3s ease, transform .3s var(--ease), background .3s ease;
+    }
+    .button::before {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      background: var(--accent);
+      content: "";
+      transform: translateY(102%);
+      transition: transform .42s var(--ease);
+    }
+    .button:hover { color: white; transform: translateY(-2px); }
+    .button:hover::before { transform: translateY(0); }
+    .button:active { transform: translateY(0) scale(.985); }
+    .button .icon { transition: transform .3s var(--ease); }
+    .button:hover .icon { transform: translateX(-4px); }
+    .text-link {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding-block: 9px;
+      color: var(--ink-soft);
+      font-size: 11px;
+      transition: color .25s ease;
+    }
+    .text-link::after {
+      position: absolute;
+      right: 0;
+      bottom: 4px;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      content: "";
+      transform: scaleX(.18);
+      transform-origin: right;
+      transition: transform .3s var(--ease);
+    }
+    .text-link:hover { color: var(--accent-dark); }
+    .text-link:hover::after { transform: scaleX(1); }
+
+    /* Compact fixed header: every navigation link jumps to a point in the same story. */
+    .site-header {
+      position: sticky;
+      z-index: 30;
+      top: 0;
+      height: var(--header-h);
+      border-bottom: 1px solid rgba(239, 242, 237, .09);
+      background: rgba(16, 22, 21, .88);
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+    }
+    .header__inner { display: flex; height: 100%; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: inline-flex; min-width: 210px; align-items: center; gap: 11px; }
+    .brand__mark { position: relative; display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line-strong); }
+    .brand__mark::before, .brand__mark::after { position: absolute; background: var(--accent); content: ""; }
+    .brand__mark::before { width: 14px; height: 1px; }
+    .brand__mark::after { width: 1px; height: 14px; }
+    .brand__name { display: block; font-size: 12px; font-weight: 600; line-height: 1.35; }
+    .brand__sub { display: block; margin-top: 2px; color: var(--muted); font-size: 8px; }
+    .main-nav { display: flex; align-items: center; gap: clamp(18px, 3vw, 44px); }
+    .main-nav a { position: relative; padding-block: 8px; color: var(--ink-soft); font-size: 10px; transition: color .2s ease; }
+    .main-nav a::after { position: absolute; right: 0; bottom: 1px; width: 100%; height: 1px; background: var(--accent); content: ""; transform: scaleX(0); transform-origin: right; transition: transform .28s var(--ease); }
+    .main-nav a:hover, .main-nav a.is-current { color: var(--ink); }
+    .main-nav a:hover::after, .main-nav a.is-current::after { transform: scaleX(1); }
+    .header__action { display: inline-flex; align-items: center; gap: 9px; font-size: 10px; font-weight: 500; transition: color .2s ease; }
+    .header__action:hover { color: var(--accent-dark); }
+    .header__action span { display: grid; width: 28px; height: 28px; place-items: center; border: 1px solid var(--line-strong); border-radius: 50%; transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease; }
+    .header__action:hover span { transform: translateY(-2px); border-color: var(--accent); background: var(--accent); color: white; }
+    .menu-toggle { display: none; }
+
+    /* One long section. The sticky frame stays still while the scroll changes the active scene. */
+    .experience {
+      position: relative;
+      height: 780vh;
+      height: 780svh;
+      min-height: 5000px;
+      background: var(--paper);
+    }
+    .experience__sticky {
+      position: sticky;
+      top: var(--header-h);
+      display: flex;
+      height: calc(100svh - var(--header-h));
+      min-height: 590px;
+      flex-direction: column;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(ellipse at var(--glow-x, 28%) 52%, rgba(255, 255, 255, .045), transparent 44%),
+        linear-gradient(90deg, rgba(239, 242, 237, .025) 1px, transparent 1px),
+        var(--paper);
+      background-size: auto, 80px 80px, auto;
+      transition: --glow-x 1.1s var(--ease), background-position .8s ease;
+    }
+    .experience__topline {
+      display: flex;
+      min-height: 62px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-inline: max(48px, calc((100vw - 1440px) / 2));
+      border-bottom: 1px solid var(--line);
+    }
+    .experience__topline .eyebrow { font-size: 9px; }
+    .experience__topline .eyebrow::before { width: 5px; height: 5px; box-shadow: none; }
+    .topline__meta { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 8px; }
+    .topline__meta b { color: var(--ink); font-size: 9px; font-weight: 500; }
+    .experience__layout {
+      position: relative;
+      display: grid;
+      width: var(--shell);
+      min-height: 0;
+      flex: 1;
+      grid-template-columns: minmax(0, 1.18fr) minmax(330px, .82fr);
+      grid-template-areas: "visual copy";
+      align-items: center;
+      gap: clamp(20px, 4vw, 72px);
+      margin-inline: auto;
+      direction: ltr;
+    }
+
+    /* Product visual */
+    .product-visual {
+      position: relative;
+      display: grid;
+      min-width: 0;
+      height: 100%;
+      max-height: 780px;
+      grid-area: visual;
+      place-items: center;
+      overflow: hidden;
+      padding-block: 14px 18px;
+      perspective: 1500px;
+      direction: rtl;
+      isolation: isolate;
+      transition: opacity .65s ease, transform .75s var(--ease), filter .65s ease;
+    }
+    .experience[data-active-step="7"] .product-visual {
+      opacity: 0;
+      filter: blur(5px);
+      transform: scale(.96);
+      pointer-events: none;
+    }
+    }
+    .product-visual::before {
+      position: absolute;
+      z-index: -1;
+      top: 2%;
+      left: 1%;
+      width: min(98%, 780px);
+      height: 96%;
+      border-radius: 42%;
+      background: radial-gradient(ellipse, var(--product-light) 0 58%, rgba(247, 246, 242, .94) 69%, rgba(226, 228, 221, .58) 82%, rgba(196, 204, 197, .12) 96%, transparent 100%);
+      box-shadow: 0 0 125px rgba(235, 238, 228, .11);
+      content: "";
+      filter: blur(8px);
+      transform: scaleY(.96) rotate(-7deg);
+    }
+    .product-visual::after {
+      position: absolute;
+      z-index: -1;
+      right: 17%;
+      bottom: 10%;
+      left: 14%;
+      height: 10%;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, .46);
+      content: "";
+      filter: blur(28px);
+      transform: scaleX(.8);
+    }
+    .product-orbit {
+      position: absolute;
+      z-index: -1;
+      top: 13%;
+      left: 12%;
+      width: min(77%, 570px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(239, 242, 237, .08);
+      border-radius: 50%;
+      transform: scaleY(.78) rotate(28deg);
+    }
+    .product-orbit::before, .product-orbit::after { position: absolute; width: 6px; height: 6px; border: 1px solid var(--accent); border-radius: 50%; background: var(--paper); content: ""; }
+    .product-orbit::before { top: 19%; left: 8%; }
+    .product-orbit::after { right: 3%; bottom: 21%; width: 5px; height: 5px; background: var(--accent); }
+    .machine-depth {
+      position: relative;
+      display: grid;
+      width: min(100%, 620px);
+      height: 100%;
+      max-height: min(62svh, 610px);
+      place-items: center;
+      transform:
+        translate3d(calc(var(--machine-x, 0px) + var(--pointer-x, 0px)), calc(var(--machine-y, 0px) + var(--pointer-y, 0px)), 0)
+        rotateX(calc(var(--machine-rx, 0deg) + var(--pointer-rx, 0deg)))
+        rotateY(calc(var(--machine-ry, 0deg) + var(--pointer-ry, 0deg)))
+        scale(var(--machine-scale, 1));
+      transform-style: preserve-3d;
+      transition: transform .18s linear;
+      animation: machine-enter .9s var(--ease) .12s both;
+      will-change: transform;
+    }
+    .machine-depth img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      border-radius: clamp(16px, 2vw, 26px);
+      mix-blend-mode: normal;
+      filter: none;
+      backface-visibility: hidden;
+      user-select: none;
+    }
+    .visual-caption { position: absolute; bottom: 7%; left: 4%; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 8px; }
+    .visual-caption::before { width: 28px; height: 1px; background: var(--accent); content: ""; }
+    .visual-caption b { color: var(--accent-dark); font-size: 10px; font-weight: 500; }
+    .visual-coordinate { position: absolute; top: 18%; left: 2%; color: var(--muted); font-size: 8px; writing-mode: vertical-rl; }
+
+    /* Changing story content */
+    .experience__copy {
+      position: relative;
+      z-index: 4;
+      min-width: 0;
+      min-height: 0;
+      grid-area: copy;
+      direction: rtl;
+    }
+    .scene-copy {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      grid-area: copy;
+      direction: rtl;
+      opacity: 0;
+      filter: blur(11px);
+      transform: translate3d(0, 22px, 0) scale(.99);
+      transition: opacity .62s var(--ease), filter .72s var(--ease), transform .72s var(--ease);
+      pointer-events: none;
+    }
+    .scene-copy.is-active { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0) scale(1); pointer-events: auto; }
+    .scene-copy .copy-frame > * {
+      opacity: 0;
+      transform: translateY(11px);
+      transition: opacity .42s ease, transform .58s var(--ease);
+    }
+    .scene-copy.is-active .copy-frame > * { opacity: 1; transform: translateY(0); }
+    .scene-copy.is-active .copy-frame > :nth-child(1) { transition-delay: .08s; }
+    .scene-copy.is-active .copy-frame > :nth-child(2) { transition-delay: .15s; }
+    .scene-copy.is-active .copy-frame > :nth-child(3) { transition-delay: .22s; }
+    .scene-copy.is-active .copy-frame > :nth-child(4) { transition-delay: .29s; }
+    .scene-copy.is-active .copy-frame > :nth-child(5) { transition-delay: .36s; }
+    .copy-frame { position: relative; display: flex; min-width: 0; min-height: 360px; flex-direction: column; justify-content: center; padding: 22px 0 34px; }
+    .scene-kicker { display: block; margin-bottom: 14px; color: var(--accent-dark); font-size: 10px; font-weight: 500; }
+    .scene-index { display: inline-flex; align-items: center; gap: 11px; margin-bottom: 9px; color: var(--accent-dark); font-size: 11px; font-weight: 500; }
+    .scene-index::after { width: 34px; height: 1px; background: rgba(189, 99, 75, .55); content: ""; }
+    .scene-copy h1, .scene-copy h2 { max-width: 540px; margin: 0; font-size: clamp(34px, 4.6vw, 63px); font-weight: 400; line-height: 1.42; letter-spacing: -.06em; }
+    .scene-copy h1 span, .scene-copy h2 span { color: var(--accent); }
+    .scene-copy p { max-width: 430px; margin: 14px 0 0; color: var(--ink-soft); font-size: clamp(11px, 1.05vw, 13px); line-height: 2.05; }
+    .scene-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 17px; margin-top: 24px; }
+    .scene-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .scene-tags span { padding: 5px 10px; border: 1px solid var(--line); color: var(--ink-soft); font-size: 8px; }
+    .scene-note { display: inline-flex; width: fit-content; align-items: center; gap: 9px; margin-top: 22px; color: var(--ink-soft); font-size: 9px; }
+    .scene-note::before { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); content: ""; }
+
+    /* The features and technical data are scenes in the same section—not separate page sections. */
+    .scene-copy--features .copy-frame, .scene-copy--specs .copy-frame { padding-block: 13px; }
+    .scene-copy--features h2, .scene-copy--specs h2 { font-size: clamp(30px, 3.7vw, 47px); }
+    .feature-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; margin-top: 17px; border-top: 1px solid var(--line-strong); }
+    .feature-item { display: grid; min-height: 69px; grid-template-columns: 28px 1fr; align-items: center; gap: 9px; border-bottom: 1px solid var(--line); opacity: 0; transform: translateY(8px); transition: opacity .38s ease, transform .52s var(--ease); }
+    .scene-copy.is-active .feature-item { opacity: 1; transform: translateY(0); }
+    .scene-copy.is-active .feature-item:nth-child(1) { transition-delay: .2s; }
+    .scene-copy.is-active .feature-item:nth-child(2) { transition-delay: .25s; }
+    .scene-copy.is-active .feature-item:nth-child(3) { transition-delay: .3s; }
+    .scene-copy.is-active .feature-item:nth-child(4) { transition-delay: .35s; }
+    .scene-copy.is-active .feature-item:nth-child(5) { transition-delay: .4s; }
+    .scene-copy.is-active .feature-item:nth-child(6) { transition-delay: .45s; }
+    .feature-item__num { color: var(--accent-dark); font-size: 8px; }
+    .feature-item__text strong { display: block; font-size: 10px; font-weight: 500; line-height: 1.5; }
+    .feature-item__text small { display: block; margin-top: 2px; color: var(--muted); font-size: 8px; line-height: 1.5; }
+    .spec-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 15px; margin: 16px 0 0; border-top: 1px solid var(--line-strong); }
+    .spec { min-width: 0; padding: 8px 0 7px; border-bottom: 1px solid var(--line); opacity: 0; transform: translateY(7px); transition: opacity .38s ease, transform .5s var(--ease); }
+    .scene-copy.is-active .spec { opacity: 1; transform: translateY(0); }
+    .scene-copy.is-active .spec:nth-child(1) { transition-delay: .18s; }
+    .scene-copy.is-active .spec:nth-child(2) { transition-delay: .22s; }
+    .scene-copy.is-active .spec:nth-child(3) { transition-delay: .26s; }
+    .scene-copy.is-active .spec:nth-child(4) { transition-delay: .3s; }
+    .scene-copy.is-active .spec:nth-child(5) { transition-delay: .34s; }
+    .scene-copy.is-active .spec:nth-child(6) { transition-delay: .38s; }
+    .scene-copy.is-active .spec:nth-child(7) { transition-delay: .42s; }
+    .scene-copy.is-active .spec:nth-child(8) { transition-delay: .46s; }
+    .spec dt { color: var(--muted); font-size: 8px; }
+    .spec dd { margin: 2px 0 0; color: var(--ink); font-size: 10px; font-weight: 500; line-height: 1.5; }
+    .scene-copy--specs .scene-note { margin-top: 12px; font-size: 8px; }
+    .scene-copy--contact .copy-frame { min-height: 360px; }
+    .scene-copy--contact h2 { font-size: clamp(36px, 4.7vw, 62px); }
+    .contact-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 23px; }
+    .contact-actions .button { min-width: 220px; }
+    .contact-actions .text-link { font-size: 10px; }
+    .scene-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 29px; padding-top: 13px; border-top: 1px solid var(--line); color: var(--muted); font-size: 8px; }
+    .scene-footer strong { color: var(--ink); font-weight: 500; }
+
+    /* Minimal step rail and scroll progress */
+    .experience__rail { position: absolute; z-index: 5; top: 50%; left: max(0px, calc((100vw - 1440px) / -2 + 2px)); display: flex; flex-direction: column; align-items: flex-start; gap: 12px; direction: rtl; transform: translateY(-50%); }
+    .rail__caption { margin-bottom: 2px; color: var(--muted); font-size: 8px; writing-mode: vertical-rl; transform: rotate(180deg); }
+    .rail__step { display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: transparent; color: var(--muted); cursor: pointer; transition: color .25s ease, transform .25s ease; }
+    .rail__step:hover { color: var(--ink); transform: translateX(2px); }
+    .rail__step-number { display: grid; width: 25px; height: 25px; place-items: center; border: 1px solid transparent; border-radius: 50%; font-size: 8px; transition: border-color .25s ease, color .25s ease, background .25s ease; }
+    .rail__step-label { font-size: 8px; opacity: 0; transform: translateX(5px); transition: opacity .25s ease, transform .25s ease; }
+    .rail__step.is-active { color: var(--accent-dark); }
+    .rail__step.is-active .rail__step-number { border-color: rgba(189, 99, 75, .58); background: rgba(189, 99, 75, .08); }
+    .rail__step.is-active .rail__step-label, .rail__step:hover .rail__step-label { opacity: 1; transform: translateX(0); }
+    .experience__bottomline { display: flex; min-height: 52px; align-items: center; justify-content: space-between; gap: 16px; padding-inline: max(48px, calc((100vw - 1440px) / 2)); border-top: 1px solid var(--line); color: var(--muted); font-size: 8px; }
+    .experience__bottomline strong { color: var(--ink); font-weight: 500; }
+    .progress-inline { display: flex; min-width: 185px; align-items: center; gap: 10px; }
+    .progress-inline__number { color: var(--ink); font-size: 9px; white-space: nowrap; }
+    .progress-inline__track { position: relative; width: 96px; height: 1px; background: var(--line-strong); }
+    .progress-inline__fill { position: absolute; inset: 0 0 0 auto; width: 0; background: var(--accent); transition: width .16s linear; }
+    .bottomline__hint { display: flex; align-items: center; gap: 9px; }
+    .bottomline__hint i { display: block; width: 24px; height: 1px; background: var(--accent); }
+
+    @keyframes machine-enter { from { opacity: 0; filter: blur(6px); } to { opacity: 1; filter: blur(0); } }
+
+    @media (min-width: 1600px) {
+      .machine-depth { max-height: min(62svh, 650px); }
+      .product-visual { max-height: 850px; }
+    }
+    @media (max-width: 1100px) {
+      :root { --shell: min(100% - 64px, 1000px); }
+      .brand { min-width: auto; }
+      .main-nav { gap: 19px; }
+      .experience__layout { grid-template-columns: minmax(0, 1.06fr) minmax(300px, .94fr); gap: 22px; }
+      .experience__rail { left: -5px; }
+      .rail__step-label, .rail__caption { display: none; }
+      .experience__topline, .experience__bottomline { padding-inline: 32px; }
+      .machine-depth { width: min(100%, 600px); }
+      .copy-frame { min-height: 330px; }
+    }
+    @media (max-width: 760px) {
+      :root { --header-h: 66px; --shell: min(100% - 40px, 680px); }
+      html { scroll-padding-top: var(--header-h); }
+      .site-header { background: rgba(16, 22, 21, .96); }
+      .brand__mark { width: 31px; height: 31px; }
+      .brand__sub { font-size: 7px; }
+      .header__inner { gap: 13px; }
+      .header__action { margin-inline-start: auto; font-size: 9px; }
+      .header__action span { width: 25px; height: 25px; }
+      .menu-toggle { display: grid; width: 36px; height: 36px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
+      .menu-toggle svg { width: 17px; height: 17px; }
+      .main-nav { position: absolute; top: calc(100% + 1px); right: 0; left: 0; display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 5px 20px 13px; border-bottom: 1px solid var(--line); background: rgba(16, 22, 21, .99); opacity: 0; transform: translateY(-8px); transition: opacity .24s ease, transform .24s ease; pointer-events: none; }
+      .main-nav.is-open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+      .main-nav a { padding: 11px 0; border-bottom: 1px solid rgba(239, 242, 237, .08); }
+      .main-nav a:last-child { border-bottom: 0; }
+      .main-nav a::after { display: none; }
+      .experience { height: 820vh; height: 820svh; min-height: 0; }
+      .experience__sticky { min-height: 0; }
+      .experience__topline { min-height: 49px; padding-inline: 20px; }
+      .experience__topline .eyebrow { font-size: 8px; }
+      .topline__meta { gap: 6px; font-size: 7px; }
+      .experience__layout { width: var(--shell); grid-template-columns: 1fr; grid-template-rows: minmax(0, 1.1fr) minmax(0, .9fr); grid-template-areas: "visual" "copy"; gap: 0; padding-block: 26px 2px; }
+      .product-visual { min-height: 0; max-height: none; }
+      .product-visual::before { top: 8%; left: 13%; width: min(75%, 470px); }
+      .product-orbit { top: 12%; left: 15%; width: min(70%, 420px); }
+      .product-visual::after { right: 21%; bottom: 6%; left: 21%; height: 7%; }
+      .machine-depth { width: min(100%, 465px); max-height: 43svh; }
+      .machine-depth img { max-height: 43svh; }
+      .visual-caption { bottom: 5%; left: 0; font-size: 7px; }
+      .visual-coordinate { top: 18%; left: 1%; font-size: 7px; }
+      .experience__rail { top: 7px; right: 0; left: 0; flex-direction: row; justify-content: center; gap: 3px; transform: none; }
+      .rail__caption { display: none; }
+      .rail__step-number { width: 22px; height: 22px; font-size: 7px; }
+      .scene-copy { justify-content: flex-start; }
+      .copy-frame { min-height: 0; height: 100%; justify-content: center; padding: 8px 0 17px; }
+      .scene-kicker { margin-bottom: 6px; font-size: 8px; }
+      .scene-index { margin-bottom: 3px; font-size: 9px; }
+      .scene-copy h1, .scene-copy h2 { font-size: clamp(27px, 7.4vw, 43px); line-height: 1.34; }
+      .scene-copy p { max-width: 560px; margin-top: 8px; font-size: 9px; line-height: 1.85; }
+      .scene-actions { gap: 12px; margin-top: 14px; }
+      .scene-actions .button { min-height: 43px; padding-inline: 14px; font-size: 9px; }
+      .scene-actions .text-link { font-size: 9px; }
+      .scene-tags { gap: 5px; margin-top: 11px; }
+      .scene-tags span { padding: 4px 7px; font-size: 7px; }
+      .scene-note { margin-top: 10px; font-size: 8px; }
+      .scene-copy--features .copy-frame, .scene-copy--specs .copy-frame { padding-block: 2px 9px; }
+      .scene-copy--features h2, .scene-copy--specs h2 { font-size: clamp(24px, 6.4vw, 35px); }
+      .feature-list { gap: 0 11px; margin-top: 8px; }
+      .feature-item { min-height: 46px; grid-template-columns: 21px 1fr; gap: 5px; }
+      .feature-item__num { font-size: 7px; }
+      .feature-item__text strong { font-size: 8px; }
+      .feature-item__text small { display: none; }
+      .spec-grid { gap: 0 10px; margin-top: 8px; }
+      .spec { padding-block: 4px; }
+      .spec dt { font-size: 7px; }
+      .spec dd { margin-top: 1px; font-size: 8px; }
+      .scene-copy--specs .scene-note { margin-top: 6px; font-size: 7px; }
+      .scene-copy--contact h2 { font-size: clamp(31px, 8.1vw, 46px); }
+      .contact-actions { gap: 6px; margin-top: 13px; }
+      .contact-actions .button { min-width: 190px; min-height: 44px; font-size: 9px; }
+      .contact-actions .text-link { font-size: 9px; }
+      .scene-footer { margin-top: 14px; padding-top: 8px; font-size: 7px; }
+      .experience__bottomline { min-height: 43px; padding-inline: 20px; font-size: 7px; }
+      .experience__bottomline > span:first-child { max-width: 48%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .progress-inline { min-width: 0; gap: 7px; }
+      .progress-inline__number { font-size: 8px; }
+      .progress-inline__track { width: 55px; }
+      .bottomline__hint { gap: 6px; }
+      .bottomline__hint i { width: 15px; }
+    }
+    @media (max-width: 430px) {
+      :root { --shell: min(100% - 32px, 400px); }
+      .header__inner { gap: 9px; }
+      .header__action { gap: 0; font-size: 0; }
+      .header__action span { flex: 0 0 auto; }
+      .brand__name { font-size: 10px; }
+      .brand__sub { font-size: 7px; }
+      .experience__layout { grid-template-rows: minmax(0, 1.03fr) minmax(0, .97fr); }
+      .machine-depth { max-height: 40svh; }
+      .machine-depth img { max-height: 40svh; }
+      .experience__rail { gap: 2px; }
+      .rail__step-number { width: 20px; height: 20px; }
+      .scene-copy h1, .scene-copy h2 { font-size: 27px; }
+      .scene-copy p { font-size: 8px; }
+      .scene-copy--features h2, .scene-copy--specs h2 { font-size: 24px; }
+      .feature-item { min-height: 42px; }
+      .feature-item__text strong { font-size: 7px; }
+      .scene-copy--contact h2 { font-size: 31px; }
+    }
+    @media (max-height: 690px) and (min-width: 761px) {
+      .experience__sticky { min-height: 540px; }
+      .experience__topline { min-height: 49px; }
+      .experience__bottomline { min-height: 42px; }
+      .machine-depth { max-height: 68vh; }
+      .copy-frame { min-height: 300px; }
+      .feature-item { min-height: 59px; }
+      .spec { padding-block: 6px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header__inner shell">
+      <a class="brand" href="#experience" data-go-step="0" aria-label="فناوری چاپ دقیق، بازگشت به آغاز تجربه">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <span><span class="brand__name">فناوری چاپ دقیق</span><span class="brand__sub">سامانه‌های صنعتی ساخت کلیشه</span></span>
+      </a>
+      <nav class="main-nav" id="main-nav" aria-label="پیمایش در تجربه‌ی محصول">
+        <a href="#experience" data-go-step="1">کاوش دستگاه</a>
+        <a href="#experience" data-go-step="5">ویژگی‌ها</a>
+        <a href="#experience" data-go-step="6">مشخصات فنی</a>
+      </nav>
+      <a class="header__action" href="#experience" data-go-step="7" aria-label="رفتن به مرحله‌ی ارتباط با واحد فروش">گفت‌وگوی فنی <span aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+      <button class="menu-toggle" type="button" aria-label="باز کردن فهرست" aria-expanded="false" aria-controls="main-nav"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="experience" id="experience" data-experience aria-label="معرفی تعاملی سامانه‌ی ساخت کلیشه">
+      <div class="experience__sticky" data-sticky-frame>
+        <div class="experience__topline">
+          <p class="eyebrow">تجربه‌ی تعاملی محصول</p>
+          <div class="topline__meta"><span>حرکت کنید</span><b data-top-step>۰۱ / ۰۸</b><span>ببینید</span></div>
+        </div>
+
+        <div class="experience__layout">
+          <div class="product-visual" data-product-visual aria-label="تصویر دستگاه با حرکت وابسته به پیمایش">
+            <span class="product-orbit" aria-hidden="true"></span>
+            <div class="machine-depth" data-machine>
+              <img src="assets/plate-maker-hero.webp" alt="دستگاه صنعتی ساخت کلیشه‌ی فوتوپلیمری با بدنه‌ی فلزی، پنل کنترل و پایه‌های چرخ‌دار" width="928" height="1152" fetchpriority="high" draggable="false">
+            </div>
+            <span class="visual-coordinate" aria-hidden="true">ساختار، در خدمت فرایند</span>
+            <span class="visual-caption" aria-hidden="true"><b data-visual-number>۰۱</b><span data-visual-label>نمای کلی سامانه</span></span>
+          </div>
+
+          <div class="experience__copy" aria-live="polite" aria-atomic="true">
+            <article class="scene-copy scene-copy--intro is-active" data-scene="0" aria-hidden="false">
+              <div class="copy-frame">
+                <span class="scene-kicker">تجهیزات پیش‌ازچاپ · ساخت کلیشه‌ی فوتوپلیمری</span>
+                <h1>از نور،<br><span>تا ردّ دقیق روی کاغذ.</span></h1>
+                <p>روایتی از یک سامانه‌ی صنعتی که کنترل، ساختار و فرایند را در تجربه‌ای یکپارچه کنار هم می‌آورد.</p>
+                <div class="scene-actions">
+                  <a class="button" href="#experience" data-go-step="1">ورود به تجربه‌ی محصول <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                  <a class="text-link" href="#experience" data-go-step="6">مشخصات فنی</a>
+                </div>
+                <div class="scene-tags" aria-label="نکات برجسته"><span>فناوری فوتوپلیمری</span><span>کنترل دیجیتال و آنالوگ</span><span>ساختار صنعتی</span></div>
+              </div>
+            </article>
+
+            <article class="scene-copy" data-scene="1" aria-hidden="true" inert>
+              <div class="copy-frame">
+                <span class="scene-index">۰۲ <span>طراحی</span></span>
+                <h2>مهندسی‌شده،<br>برای کارِ مداوم.</h2>
+                <p>بدنه‌ی فلزی و چیدمان عمودی اجزا، تصویری یکپارچه از یک سامانه‌ی صنعتی می‌سازند؛ استوار، خوانا و آماده‌ی حضور در خط تولید.</p>
+                <span class="scene-note">تمرکز روی هندسه‌ی بدنه</span>
+              </div>
+            </article>
+
+            <article class="scene-copy" data-scene="2" aria-hidden="true" inert>
+              <div class="copy-frame">
+                <span class="scene-index">۰۳ <span>کنترل</span></span>
+                <h2>اطلاعات،<br>همیشه در دسترس.</h2>
+                <p>نمایشگرهای دیجیتال در کنار نشانگر آنالوگ، وضعیت و تنظیمات فرایند را در یک نگاه پیش روی اپراتور قرار می‌دهند.</p>
+                <span class="scene-note">فوکوس روی پنل اپراتوری</span>
+              </div>
+            </article>
+
+            <article class="scene-copy" data-scene="3" aria-hidden="true" inert>
+              <div class="copy-frame">
+                <span class="scene-index">۰۴ <span>دقت</span></span>
+                <h2>توجه به جزئیات،<br>در هر مرحله.</h2>
+                <p>چیدمان روشن کنترل‌ها و امکان پایش تنظیمات، مسیر کار را قابل‌پیگیری می‌کند؛ تا تصمیم‌های اپراتور بخشی از کیفیت خروجی باشند.</p>
+                <span class="scene-note">پایش دقیق تنظیمات چرخه</span>
+              </div>
+            </article>
+
+            <article class="scene-copy" data-scene="4" aria-hidden="true" inert>
+              <div class="copy-frame">
+                <span class="scene-index">۰۵ <span>فرایند</span></span>
+                <h2>یک چرخه‌ی منظم،<br>از آغاز تا پایان.</h2>
+                <p>سامانه‌ی فوتوپلیمری با دسترسی به بخش‌های اصلی دستگاه، مراحل آماده‌سازی کلیشه را در بستری منسجم و قابل‌کنترل همراهی می‌کند.</p>
+                <span class="scene-note">رویکرد مرحله‌به‌مرحله</span>
+              </div>
+            </article>
+
+            <article class="scene-copy scene-copy--features" data-scene="5" aria-hidden="true" inert>
+              <div class="copy-frame">
+                <span class="scene-kicker">ویژگی‌های کلیدی / ۰۱—۰۶</span>
+                <h2>سادگیِ کنترل،<br><span>قدرتِ ساختار.</span></h2>
+                <div class="feature-list">
+                  <div class="feature-item"><span class="feature-item__num">۰۱</span><span class="feature-item__text"><strong>دقت در جزئیات</strong><small>پایش تنظیمات چرخه</small></span></div>
+                  <div class="feature-item"><span class="feature-item__num">۰۲</span><span class="feature-item__text"><strong>کنترل در یک نگاه</strong><small>نمایشگر و نشانگر</small></span></div>
+                  <div class="feature-item"><span class="feature-item__num">۰۳</span><span class="feature-item__text"><strong>ساختار صنعتی</strong><small>بدنه‌ی فلزی</small></span></div>
+                  <div class="feature-item"><span class="feature-item__num">۰۴</span><span class="feature-item__text"><strong>فرایند فوتوپلیمری</strong><small>آماده‌سازی کلیشه</small></span></div>
+                  <div class="feature-item"><span class="feature-item__num">۰۵</span><span class="feature-item__text"><strong>چیدمان کاربردی</strong><small>دسترسی به اجزا</small></span></div>
+                  <div class="feature-item"><span class="feature-item__num">۰۶</span><span class="feature-item__text"><strong>استقرار چرخ‌دار</strong><small>انعطاف در چیدمان کارگاه</small></span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="scene-copy scene-copy--specs" data-scene="6" aria-hidden="true" inert>
+              <div class="copy-frame">
+                <span class="scene-kicker">اطلاعات فنی / نمای کلی</span>
+                <h2>مشخصات،<br><span>بدون حدس و گمان.</span></h2>
+                <dl class="spec-grid">
+                  <div class="spec"><dt>فناوری ساخت</dt><dd>فوتوپلیمری</dd></div>
+                  <div class="spec"><dt>سامانه‌ی کنترل</dt><dd>دیجیتال + آنالوگ</dd></div>
+                  <div class="spec"><dt>ساختار بدنه</dt><dd>فلزی، صنعتی</dd></div>
+                  <div class="spec"><dt>پایه‌ی دستگاه</dt><dd>چرخ‌دار</dd></div>
+                  <div class="spec"><dt>پایش فرایند</dt><dd>پنل دیجیتال و نشانگر</dd></div>
+                  <div class="spec"><dt>چرخه‌ی کاری</dt><dd>متناسب با تنظیمات اپراتور</dd></div>
+                  <div class="spec"><dt>ابعاد و وزن</dt><dd>وابسته به مدل نهایی</dd></div>
+                  <div class="spec"><dt>توان و ظرفیت</dt><dd>طبق دیتاشیت پیکربندی</dd></div>
+                </dl>
+                <span class="scene-note">اعداد مدل نهایی باید با دیتاشیت تأیید شوند.</span>
+              </div>
+            </article>
+
+            <article class="scene-copy scene-copy--contact" data-scene="7" aria-hidden="true" inert>
+              <div class="copy-frame">
+                <span class="scene-kicker">گام بعدی / گفت‌وگوی فنی</span>
+                <h2>برای انتخاب دقیق،<br><span>گفت‌وگو را آغاز کنید.</span></h2>
+                <p>برای دریافت اطلاعات فنی، دیتاشیت مدل‌ها و مشاوره‌ی انتخاب پیکربندی، با واحد فروش در ارتباط باشید.</p>
+                <div class="contact-actions">
+                  <a class="button" href="mailto:?subject=%D8%AF%D8%B1%D8%AE%D9%88%D8%A7%D8%B3%D8%AA%20%D8%A7%D8%B7%D9%84%D8%A7%D8%B9%D8%A7%D8%AA%20%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87%E2%80%8C%DB%8C%20%D8%B3%D8%A7%D8%AE%D8%AA%20%DA%A9%D9%84%DB%8C%D8%B4%D9%87">درخواست اطلاعات محصول <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                  <a class="text-link" href="mailto:?subject=%D8%AA%D9%85%D8%A7%D8%B3%20%D8%A8%D8%A7%20%D9%88%D8%A7%D8%AD%D8%AF%20%D9%81%D8%B1%D9%88%D8%B4">تماس با واحد فروش</a>
+                </div>
+                <div class="scene-footer"><span><strong>فناوری چاپ دقیق</strong> · سامانه‌های صنعتی ساخت کلیشه</span><a href="#experience" data-go-step="0">بازگشت به آغاز ↑</a></div>
+              </div>
+            </article>
+          </div>
+
+          <nav class="experience__rail" aria-label="مراحل تجربه‌ی محصول">
+            <span class="rail__caption">مراحل کاوش</span>
+            <button class="rail__step is-active" type="button" data-go-step="0" aria-label="مرحله‌ی ۰۱، معرفی" aria-current="step"><span class="rail__step-number">۰۱</span><span class="rail__step-label">معرفی</span></button>
+            <button class="rail__step" type="button" data-go-step="1" aria-label="مرحله‌ی ۰۲، طراحی"><span class="rail__step-number">۰۲</span><span class="rail__step-label">طراحی</span></button>
+            <button class="rail__step" type="button" data-go-step="2" aria-label="مرحله‌ی ۰۳، کنترل"><span class="rail__step-number">۰۳</span><span class="rail__step-label">کنترل</span></button>
+            <button class="rail__step" type="button" data-go-step="3" aria-label="مرحله‌ی ۰۴، دقت"><span class="rail__step-number">۰۴</span><span class="rail__step-label">دقت</span></button>
+            <button class="rail__step" type="button" data-go-step="4" aria-label="مرحله‌ی ۰۵، فرایند"><span class="rail__step-number">۰۵</span><span class="rail__step-label">فرایند</span></button>
+            <button class="rail__step" type="button" data-go-step="5" aria-label="مرحله‌ی ۰۶، ویژگی‌ها"><span class="rail__step-number">۰۶</span><span class="rail__step-label">ویژگی‌ها</span></button>
+            <button class="rail__step" type="button" data-go-step="6" aria-label="مرحله‌ی ۰۷، مشخصات"><span class="rail__step-number">۰۷</span><span class="rail__step-label">مشخصات</span></button>
+            <button class="rail__step" type="button" data-go-step="7" aria-label="مرحله‌ی ۰۸، ارتباط"><span class="rail__step-number">۰۸</span><span class="rail__step-label">ارتباط</span></button>
+          </nav>
+        </div>
+
+        <div class="experience__bottomline">
+          <span><strong data-current-label>معرفی سامانه</strong> <span>ـ تجربه‌ی محصول</span></span>
+          <div class="progress-inline" role="progressbar" aria-label="پیشرفت در تجربه‌ی محصول" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-progressbar>
+            <span class="progress-inline__number" data-progress-number>۰۱ / ۰۸</span>
+            <span class="progress-inline__track"><span class="progress-inline__fill" data-progress-fill></span></span>
+            <span>پیشرفت</span>
+          </div>
+          <span class="bottomline__hint"><i></i>اسکرول برای ادامه</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const experience = document.querySelector('[data-experience]');
+      const machine = document.querySelector('[data-machine]');
+      const productVisual = document.querySelector('[data-product-visual]');
+      const scenes = [...document.querySelectorAll('[data-scene]')];
+      const stepButtons = [...document.querySelectorAll('[data-go-step]')];
+      const progressBar = document.querySelector('[data-progressbar]');
+      const progressFill = document.querySelector('[data-progress-fill]');
+      const progressNumber = document.querySelector('[data-progress-number]');
+      const topStep = document.querySelector('[data-top-step]');
+      const currentLabel = document.querySelector('[data-current-label]');
+      const visualNumber = document.querySelector('[data-visual-number]');
+      const visualLabel = document.querySelector('[data-visual-label]');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const labels = ['معرفی سامانه', 'ساختار بدنه', 'پنل اپراتوری', 'تنظیمات چرخه', 'فرایند فوتوپلیمری', 'ویژگی‌های کلیدی', 'مشخصات فنی', 'ارتباط با فروش'];
+      const motionProfiles = [
+        { ry: -5, rx: 0, sx: 0, sy: 0, scale: 1.01 },
+        { ry: -7, rx: -2, sx: -5, sy: 3, scale: 1.02 },
+        { ry: -3, rx: 1, sx: 4, sy: 0, scale: 1.03 },
+        { ry: 2, rx: -1, sx: -4, sy: -2, scale: 1.035 },
+        { ry: 6, rx: 1, sx: 4, sy: -4, scale: 1.02 },
+        { ry: 2, rx: 0, sx: 0, sy: -4, scale: .99 },
+        { ry: -2, rx: 0, sx: 0, sy: 0, scale: .98 },
+        { ry: 4, rx: 0, sx: 0, sy: -3, scale: 1 }
+      ];
+      const persian = value => String(value).replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[digit]);
+      const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+      let activeIndex = -1;
+      let ticking = false;
+      let pointerX = 0, pointerY = 0, pointerRX = 0, pointerRY = 0;
+
+      function setScene(index) {
+        if (index === activeIndex) return;
+        activeIndex = index;
+        scenes.forEach((scene, i) => {
+          const active = i === index;
+          scene.classList.toggle('is-active', active);
+          scene.setAttribute('aria-hidden', String(!active));
+          scene.inert = !active;
+        });
+        stepButtons.forEach(button => {
+          const active = Number(button.dataset.goStep) === index && button.classList.contains('rail__step');
+          if (!button.classList.contains('rail__step')) return;
+          button.classList.toggle('is-active', active);
+          if (active) button.setAttribute('aria-current', 'step');
+          else button.removeAttribute('aria-current');
+        });
+        currentLabel.textContent = labels[index];
+        visualNumber.textContent = persian(index + 1).padStart(2, '۰');
+        visualLabel.textContent = labels[index];
+        experience.dataset.activeStep = String(index);
+        experience.style.setProperty('--glow-x', `${[28, 30, 35, 33, 28, 36, 38, 30][index]}%`);
+        topStep.textContent = `${persian(index + 1).padStart(2, '۰')} / ${persian(scenes.length).padStart(2, '۰')}`;
+      }
+
+      function updateExperience() {
+        ticking = false;
+        const rect = experience.getBoundingClientRect();
+        const distance = Math.max(1, experience.offsetHeight - window.innerHeight);
+        const progress = clamp(-rect.top / distance, 0, 1);
+        const position = progress * scenes.length;
+        const index = Math.min(scenes.length - 1, Math.floor(position));
+        const localProgress = position - index;
+        const point = motionProfiles[index];
+        const amount = Math.min(1, window.innerWidth / 1000);
+        const percent = Math.round(progress * 100);
+
+        setScene(index);
+        progressFill.style.width = `${percent}%`;
+        progressBar.setAttribute('aria-valuenow', String(percent));
+        progressNumber.textContent = `${persian(index + 1).padStart(2, '۰')} / ${persian(scenes.length).padStart(2, '۰')}`;
+
+        if (!reducedMotion.matches) {
+          const scrollTilt = (localProgress - .5) * 4.5;
+          const slowLift = Math.sin(localProgress * Math.PI) * 5;
+          machine.style.setProperty('--machine-ry', `${point.ry + scrollTilt * amount}deg`);
+          machine.style.setProperty('--machine-rx', `${point.rx + Math.cos(localProgress * Math.PI) * .8}deg`);
+          machine.style.setProperty('--machine-x', `${point.sx}px`);
+          machine.style.setProperty('--machine-y', `${point.sy + slowLift}px`);
+          machine.style.setProperty('--machine-scale', point.scale);
+          machine.style.setProperty('--pointer-x', `${pointerX}px`);
+          machine.style.setProperty('--pointer-y', `${pointerY}px`);
+          machine.style.setProperty('--pointer-rx', `${pointerRX}deg`);
+          machine.style.setProperty('--pointer-ry', `${pointerRY}deg`);
+        } else {
+          ['--machine-ry', '--machine-rx', '--machine-x', '--machine-y', '--machine-scale', '--pointer-x', '--pointer-y', '--pointer-rx', '--pointer-ry'].forEach(name => machine.style.removeProperty(name));
+        }
+      }
+
+      function requestUpdate() {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(updateExperience);
+        }
+      }
+
+      function goToStep(index) {
+        const distance = Math.max(0, experience.offsetHeight - window.innerHeight);
+        const sectionTop = window.scrollY + experience.getBoundingClientRect().top;
+        const target = sectionTop + distance * ((index + .035) / scenes.length);
+        window.scrollTo({ top: target, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+      }
+
+      window.addEventListener('scroll', requestUpdate, { passive: true });
+      window.addEventListener('resize', requestUpdate, { passive: true });
+      requestUpdate();
+
+      stepButtons.forEach(link => {
+        link.addEventListener('click', event => {
+          event.preventDefault();
+          goToStep(clamp(Number(link.dataset.goStep) || 0, 0, scenes.length - 1));
+          const nav = document.querySelector('.main-nav');
+          const toggle = document.querySelector('.menu-toggle');
+          if (nav) nav.classList.remove('is-open');
+          if (toggle) { toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-label', 'باز کردن فهرست'); }
+        });
+      });
+
+      if (productVisual && window.matchMedia('(pointer: fine)').matches && !reducedMotion.matches) {
+        let pointerFrame = false;
+        productVisual.addEventListener('pointermove', event => {
+          if (event.pointerType !== 'mouse') return;
+          const rect = productVisual.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width - .5;
+          const y = (event.clientY - rect.top) / rect.height - .5;
+          pointerX = x * 7;
+          pointerY = y * 5;
+          pointerRY = x * 1.1;
+          pointerRX = -y * .7;
+          if (!pointerFrame) {
+            pointerFrame = true;
+            requestAnimationFrame(() => { pointerFrame = false; requestUpdate(); });
+          }
+        });
+        productVisual.addEventListener('pointerleave', () => {
+          pointerX = pointerY = pointerRX = pointerRY = 0;
+          requestUpdate();
+        });
+      }
+
+      const menuToggle = document.querySelector('.menu-toggle');
+      const mainNav = document.querySelector('.main-nav');
+      if (menuToggle && mainNav) {
+        menuToggle.addEventListener('click', () => {
+          const open = menuToggle.getAttribute('aria-expanded') !== 'true';
+          menuToggle.setAttribute('aria-expanded', String(open));
+          menuToggle.setAttribute('aria-label', open ? 'بستن فهرست' : 'باز کردن فهرست');
+          mainNav.classList.toggle('is-open', open);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
