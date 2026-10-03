@@ -367,7 +367,8 @@ a{color:inherit;}
 .tc-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
 .tc-svg line, .tc-svg path{
   stroke:var(--line);stroke-width:.4;fill:none;vector-effect:non-scaling-stroke;
-  stroke-dasharray:60;stroke-dashoffset:60;transition:stroke-dashoffset 1.4s var(--ease-cinematic), stroke 1.4s ease;
+  stroke-dasharray:var(--len, 60);stroke-dashoffset:var(--len, 60);
+  transition:stroke-dashoffset 1.4s var(--ease-cinematic), stroke 1.4s ease;
 }
 .tc-diagram.in-view .tc-svg line, .tc-diagram.in-view .tc-svg path{stroke-dashoffset:0;stroke:url(#tcgrad);}
 .tc-core{
@@ -380,24 +381,35 @@ a{color:inherit;}
 .tc-diagram.in-view .tc-core{opacity:1;transform:scale(1);}
 .tc-core span{font-size:11px;letter-spacing:.2em;color:var(--text-dim);font-weight:600;}
 .tc-core b{font-size:22px;font-weight:800;letter-spacing:.08em;}
+
+/* .tc-node is a STABLE positioning anchor only (its box is exactly the size of
+   the round badge, and its only transform is the constant centering one) —
+   this guarantees JS can measure its true center at any moment, even while
+   the badge/label are still mid entrance-animation, so the connecting line
+   always lands exactly on the circle for every role, including the Analyst. */
 .tc-node{
-  position:absolute;display:flex;flex-direction:column;align-items:center;gap:10px;
-  transform:translate(-50%,-50%) translateY(16px) scale(.9);
-  opacity:0;transition:all .8s var(--ease-cinematic);
+  position:absolute;width:58px;height:58px;transform:translate(-50%,-50%);
 }
-.tc-diagram.in-view .tc-node{opacity:1;transform:translate(-50%,-50%) translateY(0) scale(1);}
 .tc-node .nd{
-  width:58px;height:58px;border-radius:50%;border:1px solid var(--line);
+  position:absolute;inset:0;border-radius:50%;border:1px solid var(--line);
   background:var(--graphite);display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:15px;color:var(--text-dim);transition:all .6s ease;
+  font-weight:800;font-size:15px;color:var(--text-dim);
+  opacity:0;transform:translateY(16px) scale(.9);
+  transition:opacity .8s var(--ease-cinematic), transform .8s var(--ease-cinematic), border-color .6s ease, color .6s ease, box-shadow .6s ease;
 }
-.tc-diagram.in-view .tc-node .nd{border-color:var(--accent);color:var(--text);box-shadow:0 0 22px var(--accent-glow);}
-.tc-node .nl{font-size:10px;letter-spacing:.16em;color:var(--text-dim-2);font-weight:700;white-space:nowrap;}
+.tc-diagram.in-view .tc-node .nd{opacity:1;transform:translateY(0) scale(1);border-color:var(--accent);color:var(--text);box-shadow:0 0 22px var(--accent-glow);}
+.tc-node .nl{
+  position:absolute;top:100%;left:50%;margin-top:10px;white-space:nowrap;text-align:center;
+  font-size:10px;letter-spacing:.16em;color:var(--text-dim-2);font-weight:700;
+  opacity:0;transform:translateX(-50%) translateY(14px);
+  transition:opacity .8s var(--ease-cinematic) .08s, transform .8s var(--ease-cinematic) .08s;
+}
+.tc-diagram.in-view .tc-node .nl{opacity:1;transform:translateX(-50%) translateY(0);}
 .tc-node .nl b{display:block;font-size:12.5px;color:var(--text-dim);margin-top:2px;letter-spacing:.04em;}
 
-/* pentagon layout — node position (%) must stay numerically identical to the
-   <line> endpoints drawn in the inline SVG (viewBox 0 0 100 100) so every
-   role, including the Analyst (01), is visibly wired into the TEAM core. */
+/* starting pentagon layout — JS re-measures and re-draws the SVG lines
+   precisely against these real positions on load/resize, so this is just a
+   sane initial placement, not something the connection relies on exactly. */
 .tc-n1{left:50%;top:12%;}
 .tc-n2{left:86%;top:38%;}
 .tc-n3{left:72%;top:81%;}
@@ -407,8 +419,9 @@ a{color:inherit;}
 @media (max-width:860px){
   .tc-diagram{height:auto;aspect-ratio:auto;max-width:420px;flex-direction:column;gap:26px;padding:20px 0;}
   .tc-svg{display:none;}
-  .tc-node{position:relative;left:auto;top:auto;transform:none !important;flex-direction:row;gap:16px;}
-  .tc-node .nl{text-align:right;}
+  .tc-node{position:relative;width:auto;height:auto;left:auto;top:auto;transform:none !important;display:flex;flex-direction:row;align-items:center;gap:16px;}
+  .tc-node .nd{position:relative;inset:auto;opacity:1 !important;transform:none !important;}
+  .tc-node .nl{position:relative;top:auto;left:auto;margin-top:0;text-align:right;opacity:1 !important;transform:none !important;}
   .tc-core{order:-1;margin-bottom:10px;}
 }
 
@@ -964,6 +977,62 @@ a{color:inherit;}
     revealTargets.forEach(function(t){ io.observe(t); });
   } else {
     revealTargets.forEach(function(t){ t.classList.add('in-view'); });
+  }
+
+  /* ---------- TEAM CONNECTION: measure real DOM positions and draw the
+     connecting lines from the TEAM core to the exact center of every role
+     badge (01..05). Because .tc-node is a stable, un-animated positioning
+     anchor (see CSS), this measurement is correct at any time — including
+     before/during the entrance animation — so every role (Analyst included)
+     always ends up precisely wired into the core, regardless of viewport
+     size, text length or animation timing. */
+  function layoutTeamDiagram(){
+    var diagram = document.getElementById('tcDiagram');
+    if(!diagram) return;
+    if(window.matchMedia('(max-width:860px)').matches) return; // SVG hidden on mobile
+
+    var core = diagram.querySelector('.tc-core');
+    var nodeEls = Array.prototype.slice.call(diagram.querySelectorAll('.tc-node'));
+    var lineEls = Array.prototype.slice.call(diagram.querySelectorAll('.tc-svg line'));
+    if(!core || !nodeEls.length || !lineEls.length) return;
+
+    var dRect = diagram.getBoundingClientRect();
+    if(!dRect.width || !dRect.height) return;
+
+    function centerPct(el){
+      var r = el.getBoundingClientRect();
+      return {
+        x: ((r.left + r.width/2) - dRect.left) / dRect.width * 100,
+        y: ((r.top + r.height/2) - dRect.top) / dRect.height * 100
+      };
+    }
+
+    var corePt = centerPct(core);
+    nodeEls.forEach(function(node, i){
+      var line = lineEls[i];
+      if(!line) return;
+      var pt = centerPct(node);
+      line.setAttribute('x1', corePt.x.toFixed(2));
+      line.setAttribute('y1', corePt.y.toFixed(2));
+      line.setAttribute('x2', pt.x.toFixed(2));
+      line.setAttribute('y2', pt.y.toFixed(2));
+      var len = Math.hypot(pt.x - corePt.x, pt.y - corePt.y);
+      line.style.setProperty('--len', (len + 2).toFixed(2));
+    });
+  }
+  layoutTeamDiagram();
+  window.addEventListener('load', layoutTeamDiagram);
+  window.addEventListener('resize', debounce(layoutTeamDiagram, 150));
+  // re-check shortly after paint/font-load settle, and again once the section
+  // scrolls into view, as a safety net against any late layout shift
+  setTimeout(layoutTeamDiagram, 400);
+  setTimeout(layoutTeamDiagram, 1200);
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(layoutTeamDiagram); }
+  var tcDiagramEl = document.getElementById('tcDiagram');
+  if(tcDiagramEl && 'IntersectionObserver' in window){
+    new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){ if(entry.isIntersecting) layoutTeamDiagram(); });
+    }, {threshold:0.1}).observe(tcDiagramEl);
   }
 
   /* ---------- SYSTEM NAV + SCENE CROSSFADE ---------- */
