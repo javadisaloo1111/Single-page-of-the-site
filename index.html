@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>پشت هر تصمیم، یک تیم هوشمند است | تیم پروژه سیستم‌های اطلاعات مدیریت</title>
+<meta name="description" content="معرفی تعاملی و سینمایی تیم پنج‌نفره پروژه درس سیستم‌های اطلاعات مدیریت — تحلیلگر، هماهنگ‌کننده، خلاق، اجراکننده و آینده‌نگر.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090D;
+  --bg-soft:#0D0F16;
+  --graphite:#14161F;
+  --graphite-2:#1B1E29;
+  --line:rgba(255,255,255,0.08);
+  --line-soft:rgba(255,255,255,0.05);
+  --text:#F3F3F6;
+  --text-dim:#9A9AAA;
+  --text-dim-2:#86869A;
+  --accent:#8B5CF6;
+  --accent-2:#22D3EE;
+  --accent-soft:rgba(139,92,246,0.14);
+  --accent-glow:rgba(139,92,246,0.45);
+  --font:'Vazirmatn', system-ui, sans-serif;
+  --ease-cinematic: cubic-bezier(.16,.84,.26,1);
+  --ease-soft: cubic-bezier(.22,.9,.3,1);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:auto;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block;}
+ul{margin:0;padding:0;list-style:none;}
+p{margin:0;}
+h1,h2,h3,h4{margin:0;font-weight:700;}
+a{color:inherit;}
+::selection{background:var(--accent);color:#fff;}
+
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--graphite-2);border-radius:10px;}
+
+.visually-hidden{
+  position:absolute !important;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;
+}
+
+/* ===================== LOADER ===================== */
+#loader{
+  position:fixed;inset:0;z-index:9999;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;
+  transition:opacity .9s var(--ease-cinematic), visibility .9s;
+}
+#loader.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.loader-mark{
+  font-size:13px;letter-spacing:.35em;color:var(--text-dim);font-weight:600;
+}
+.loader-bar{width:200px;height:1px;background:var(--line);position:relative;overflow:hidden;}
+.loader-bar::after{
+  content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  transform:translateX(-100%);animation:loaderfill 1.4s var(--ease-cinematic) forwards;
+}
+@keyframes loaderfill{to{transform:translateX(0);}}
+
+/* ===================== TOP PROGRESS ===================== */
+#top-progress{
+  position:fixed;top:0;left:0;right:0;height:2px;z-index:500;
+  background:transparent;transform-origin:right center;
+}
+#top-progress span{
+  display:block;height:100%;width:100%;
+  background:linear-gradient(90deg,var(--accent-2),var(--accent));
+  transform:scaleX(0);transform-origin:right center;
+  transition:transform .08s linear;
+}
+
+/* ===================== BRAND / TOPBAR ===================== */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:400;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:26px 42px;pointer-events:none;mix-blend-mode:difference;
+}
+.topbar *{pointer-events:auto;}
+.brand{font-size:13px;letter-spacing:.2em;font-weight:700;display:flex;align-items:center;gap:10px;}
+.brand .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2);}
+.course-tag{font-size:11px;letter-spacing:.18em;color:var(--text-dim);font-weight:500;}
+
+/* ===================== CURSOR GLOW ===================== */
+#cursor-glow{
+  position:fixed;top:0;left:0;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle, rgba(139,92,246,0.10) 0%, rgba(34,211,238,0.04) 40%, transparent 70%);
+  transform:translate(-50%,-50%);pointer-events:none;z-index:2;will-change:transform;
+  transition:opacity .4s ease;
+}
+
+/* ===================== AMBIENT BG ===================== */
+.ambient{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+}
+.ambient::before{
+  content:'';position:absolute;inset:-10%;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 30%, black 0%, transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 30%, black 0%, transparent 75%);
+}
+.ambient-orb{
+  position:absolute;border-radius:50%;filter:blur(90px);opacity:.35;
+  animation:orbfloat 22s ease-in-out infinite;
+}
+.ambient-orb.o1{width:480px;height:480px;background:var(--accent);top:-10%;right:-8%;}
+.ambient-orb.o2{width:420px;height:420px;background:var(--accent-2);bottom:-15%;left:-10%;animation-delay:-9s;opacity:.18;}
+.ambient-orb.o3{width:320px;height:320px;background:var(--accent);top:45%;left:38%;animation-delay:-15s;opacity:.12;}
+@keyframes orbfloat{
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(-30px,40px) scale(1.12);}
+}
+
+/* ===================== LAYOUT HELPERS ===================== */
+.section{position:relative;z-index:1;}
+.container{max-width:1400px;margin:0 auto;padding:0 60px;}
+
+/* ===================== HERO ===================== */
+.hero{
+  position:relative;min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;overflow:hidden;
+  padding:120px 24px 60px;
+}
+#hero-canvas{position:absolute;inset:0;z-index:0;opacity:.8;}
+.hero-inner{position:relative;z-index:2;max-width:980px;display:flex;flex-direction:column;align-items:center;gap:30px;}
+.hero-eyebrow{
+  font-size:12px;letter-spacing:.35em;color:var(--accent-2);font-weight:600;
+  display:flex;align-items:center;gap:12px;opacity:0;
+}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:28px;height:1px;background:var(--accent-2);opacity:.6;}
+.hero-title{
+  font-size:clamp(34px, 6vw, 72px);line-height:1.28;font-weight:800;letter-spacing:-0.01em;
+  background:linear-gradient(180deg,#fff 0%, #cfcfe0 60%, #9b9bb0 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  opacity:0;
+}
+.hero-title em{
+  font-style:normal;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-subtitle{
+  font-size:clamp(14px,1.6vw,19px);color:var(--text-dim);font-weight:400;max-width:560px;line-height:1.9;opacity:0;
+}
+.hero-orbits{
+  display:flex;align-items:center;gap:22px;margin-top:18px;opacity:0;
+}
+.horb{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:default;
+}
+.horb .ring{
+  width:14px;height:14px;border-radius:50%;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;transition:border-color .4s ease, box-shadow .4s ease;
+}
+.horb .ring::after{
+  content:'';width:5px;height:5px;border-radius:50%;background:var(--text-dim-2);transition:all .4s ease;
+}
+.horb:hover .ring{border-color:var(--accent);box-shadow:0 0 18px var(--accent-glow);}
+.horb:hover .ring::after{background:var(--accent-2);transform:scale(1.4);}
+.horb .label{
+  font-size:9px;letter-spacing:.18em;color:var(--text-dim-2);font-weight:600;
+  opacity:0;transform:translateY(4px);transition:all .3s ease;white-space:nowrap;
+}
+.horb:hover .label{opacity:1;transform:translateY(0);color:var(--text-dim);}
+.horb-line{width:30px;height:1px;background:var(--line);}
+
+.scroll-cue{
+  position:absolute;bottom:38px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;z-index:2;opacity:0;
+}
+.scroll-cue span{font-size:10px;letter-spacing:.3em;color:var(--text-dim-2);font-weight:600;}
+.scroll-cue .wheel{width:20px;height:32px;border:1px solid var(--line);border-radius:12px;position:relative;}
+.scroll-cue .wheel::after{
+  content:'';position:absolute;top:6px;left:50%;width:3px;height:6px;border-radius:2px;
+  background:var(--accent-2);transform:translateX(-50%);animation:wheelmove 1.8s ease-in-out infinite;
+}
+@keyframes wheelmove{0%{opacity:1;top:6px;}70%{opacity:0;top:18px;}100%{opacity:0;top:6px;}}
+
+/* ===================== SYSTEM NAV (left) ===================== */
+.system-nav{
+  position:fixed;top:50%;right:42px;transform:translateY(-50%);z-index:300;
+  display:flex;flex-direction:column;align-items:flex-end;gap:0;
+  opacity:0;pointer-events:none;transition:opacity .6s var(--ease-soft);
+}
+.system-nav.visible{opacity:1;pointer-events:auto;}
+.nav-track{position:relative;display:flex;flex-direction:column;align-items:flex-end;}
+.nav-line{
+  position:absolute;top:10px;bottom:10px;right:5px;width:1px;background:var(--line-soft);
+}
+.nav-line-fill{
+  position:absolute;top:10px;right:5px;width:1px;background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  height:0;transition:height .5s var(--ease-soft);
+}
+.nav-item{
+  position:relative;display:flex;align-items:center;gap:14px;padding:13px 0;cursor:pointer;
+  background:none;border:none;font-family:var(--font);
+}
+.nav-item .nd{
+  width:11px;height:11px;border-radius:50%;border:1px solid var(--line);background:var(--bg);
+  position:relative;z-index:1;transition:all .4s var(--ease-soft);flex:none;
+}
+.nav-item .nt{
+  text-align:right;transition:all .4s var(--ease-soft);opacity:.45;
+}
+.nav-item .nt .ni{display:block;font-size:10px;color:var(--text-dim-2);letter-spacing:.1em;font-weight:700;}
+.nav-item .nt .nr{display:block;font-size:10.5px;color:var(--text-dim);letter-spacing:.14em;font-weight:600;margin-top:2px;}
+.nav-item.active .nd{border-color:var(--accent);background:var(--accent);box-shadow:0 0 14px var(--accent-glow);transform:scale(1.25);}
+.nav-item.active .nt{opacity:1;}
+.nav-item.active .nt .nr{color:var(--text);}
+
+/* ===================== EXPERIENCE ===================== */
+.experience-track{
+  position:relative;
+}
+.experience-sticky{
+  position:sticky;top:0;height:100vh;overflow:hidden;
+  display:flex;align-items:center;
+}
+.scene-stage{position:relative;width:100%;height:100%;}
+
+.m-scene{
+  position:absolute;inset:0;display:flex;align-items:center;will-change:transform,opacity,filter;
+}
+.m-scene:not([data-index="0"]){opacity:0;}
+.m-scene .container{
+  display:grid;grid-template-columns:.85fr 1.15fr;gap:60px;align-items:center;width:100%;
+}
+
+/* portrait visual */
+.m-visual{position:relative;display:flex;align-items:center;justify-content:center;height:72vh;perspective:1400px;}
+.m-frame{
+  position:relative;width:min(380px, 85%);aspect-ratio:2/3;border-radius:22px;overflow:hidden;
+  transform-style:preserve-3d;will-change:transform;
+  border:1px solid var(--line);
+  background:linear-gradient(160deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.75), inset 0 0 0 1px rgba(255,255,255,.02);
+}
+.m-frame img{width:100%;height:100%;object-fit:cover;object-position:top center;filter:saturate(1.05) contrast(1.04);}
+.m-frame::after{
+  content:'';position:absolute;inset:0;border-radius:22px;
+  background:linear-gradient(180deg, transparent 55%, rgba(8,9,13,0.85) 100%);
+  pointer-events:none;
+}
+.m-frame-border{
+  position:absolute;inset:0;border-radius:22px;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.m-glow{
+  position:absolute;width:70%;height:70%;border-radius:50%;filter:blur(80px);
+  background:radial-gradient(circle, var(--accent-glow), transparent 70%);
+  opacity:.55;z-index:-1;
+}
+.m-tag{
+  position:absolute;font-size:9.5px;letter-spacing:.2em;font-weight:700;color:var(--text-dim);
+  background:rgba(8,9,13,.55);backdrop-filter:blur(6px);padding:6px 10px;border:1px solid var(--line);border-radius:30px;
+}
+.m-tag--top{top:16px;right:16px;}
+.m-tag--bottom{bottom:16px;left:16px;font-size:13px;color:var(--text);font-weight:800;letter-spacing:.05em;}
+.m-float-el{
+  position:absolute;border:1px solid var(--line);border-radius:10px;opacity:.5;
+}
+.m-float-1{width:54px;height:54px;top:6%;left:-4%;transform:rotate(14deg);animation:floaty 7s ease-in-out infinite;}
+.m-float-2{width:30px;height:30px;bottom:10%;right:-3%;border-radius:50%;animation:floaty 9s ease-in-out infinite reverse;}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(10deg);}50%{transform:translateY(-16px) rotate(-6deg);}}
+
+/* info panel */
+.m-info{position:relative;padding-left:20px;}
+.m-info-index{
+  font-size:13px;letter-spacing:.15em;color:var(--text-dim-2);font-weight:700;margin-bottom:14px;
+}
+.m-info-index b{color:var(--accent-2);font-size:15px;}
+.m-info-englishrole{
+  font-size:12px;letter-spacing:.3em;color:var(--accent-2);font-weight:700;margin-bottom:18px;
+}
+.m-info-name{
+  font-size:clamp(40px, 5.2vw, 84px);line-height:1.04;font-weight:800;letter-spacing:-0.015em;
+  color:var(--text);margin-bottom:14px;
+}
+.m-info-role{
+  font-size:clamp(16px,1.6vw,21px);color:var(--text-dim);font-weight:500;margin-bottom:30px;
+  padding-bottom:26px;border-bottom:1px solid var(--line-soft);max-width:520px;
+}
+.m-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px 40px;margin-bottom:28px;max-width:620px;}
+.m-block h3{
+  font-size:11px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.m-block h3::before{content:'';width:14px;height:1px;background:var(--accent);}
+.m-block ul li{
+  font-size:14px;color:var(--text-dim);line-height:1.9;position:relative;padding-right:14px;
+}
+.m-block ul li::before{
+  content:'';position:absolute;right:0;top:11px;width:4px;height:4px;border-radius:50%;background:var(--accent-2);
+}
+.m-block p{font-size:14px;color:var(--text-dim);line-height:1.9;}
+.m-block.span-2{grid-column:1 / -1;}
+.m-value{
+  margin:0 0 20px;padding:20px 24px;border-right:2px solid var(--accent);background:var(--accent-soft);
+  border-radius:4px;font-size:15px;line-height:1.9;color:var(--text);max-width:600px;font-weight:500;
+}
+.m-micro-quote{
+  font-size:18px;color:var(--accent-2);font-weight:700;margin-top:4px;margin-bottom:22px;
+  font-style:normal;letter-spacing:.01em;
+}
+.m-big-quote{
+  font-size:clamp(20px,2.4vw,30px);font-weight:800;line-height:1.5;margin:6px 0 24px;
+  background:linear-gradient(90deg,#fff,var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent;
+  max-width:600px;
+}
+.progress-count{
+  position:absolute;bottom:40px;left:60px;font-size:13px;color:var(--text-dim-2);font-weight:700;letter-spacing:.1em;z-index:3;
+}
+.progress-count b{color:var(--text);font-size:16px;}
+
+/* ===================== MOBILE / REDUCED-MOTION FALLBACK SCENE STYLES ===================== */
+@media (max-width:860px), (prefers-reduced-motion: reduce){
+  .experience-sticky{position:static;height:auto;display:block;padding:0;}
+  .scene-stage{height:auto;}
+  .m-scene{
+    position:relative;inset:auto;display:block;opacity:1 !important;transform:none !important;filter:none !important;
+    padding:110px 0 90px;border-bottom:1px solid var(--line-soft);
+  }
+  .m-scene .container{display:block;padding:0 24px;}
+  .m-visual{height:auto;margin-bottom:40px;perspective:none;}
+  .m-frame{width:min(300px,78%);margin:0 auto;}
+  .m-info{padding-left:0;}
+  .m-info-grid{grid-template-columns:1fr;}
+  .progress-count{position:static;margin-top:20px;display:block;}
+  .m-scene{opacity:1;transform:translateY(24px);transition:none;}
+  .m-scene.in-view{animation:mobilein .8s var(--ease-cinematic) forwards;}
+  @keyframes mobilein{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+}
+@media (prefers-reduced-motion: reduce){
+  .m-scene.in-view{animation:none !important;opacity:1 !important;transform:none !important;}
+}
+
+/* ===================== TEAM CONNECTION ===================== */
+.team-connection{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:140px 24px;position:relative;
+}
+.tc-head{text-align:center;margin-bottom:70px;opacity:0;transform:translateY(26px);transition:all 1s var(--ease-cinematic);}
+.tc-head.in-view{opacity:1;transform:translateY(0);}
+.tc-eyebrow{font-size:12px;letter-spacing:.3em;color:var(--accent-2);font-weight:700;margin-bottom:16px;}
+.tc-title{font-size:clamp(26px,3.6vw,46px);font-weight:800;max-width:720px;margin:0 auto;line-height:1.6;}
+.tc-diagram{
+  position:relative;width:100%;max-width:980px;height:560px;display:flex;align-items:center;justify-content:center;
+}
+.tc-svg{position:absolute;inset:0;width:100%;height:100%;}
+.tc-svg line, .tc-svg path{
+  stroke:var(--line);stroke-width:1.2;fill:none;
+  stroke-dasharray:400;stroke-dashoffset:400;transition:stroke-dashoffset 1.4s var(--ease-cinematic), stroke 1.4s ease;
+}
+.tc-diagram.in-view .tc-svg line, .tc-diagram.in-view .tc-svg path{stroke-dashoffset:0;stroke:url(#tcgrad);}
+.tc-core{
+  position:relative;z-index:2;width:150px;height:150px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, rgba(139,92,246,.35), rgba(13,15,22,.9) 70%);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.03), 0 40px 90px -20px rgba(139,92,246,.35);
+  opacity:0;transform:scale(.8);transition:all 1s var(--ease-cinematic) .4s;
+}
+.tc-diagram.in-view .tc-core{opacity:1;transform:scale(1);}
+.tc-core span{font-size:11px;letter-spacing:.2em;color:var(--text-dim);font-weight:600;}
+.tc-core b{font-size:22px;font-weight:800;letter-spacing:.08em;}
+.tc-node{
+  position:absolute;display:flex;flex-direction:column;align-items:center;gap:10px;
+  opacity:0;transform:translateY(16px) scale(.9);transition:all .8s var(--ease-cinematic);
+}
+.tc-diagram.in-view .tc-node{opacity:1;transform:translateY(0) scale(1);}
+.tc-node .nd{
+  width:58px;height:58px;border-radius:50%;border:1px solid var(--line);
+  background:var(--graphite);display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:15px;color:var(--text-dim);transition:all .6s ease;
+}
+.tc-diagram.in-view .tc-node .nd{border-color:var(--accent);color:var(--text);box-shadow:0 0 22px var(--accent-glow);}
+.tc-node .nl{font-size:10px;letter-spacing:.16em;color:var(--text-dim-2);font-weight:700;white-space:nowrap;}
+.tc-node .nl b{display:block;font-size:12.5px;color:var(--text-dim);margin-top:2px;letter-spacing:.04em;}
+
+.tc-n1{top:0;left:50%;transform:translateX(-50%);}
+.tc-n2{top:16%;right:4%;}
+.tc-n3{bottom:16%;right:10%;}
+.tc-n4{bottom:16%;left:10%;}
+.tc-n5{top:16%;left:4%;}
+
+@media (max-width:860px){
+  .tc-diagram{height:auto;flex-direction:column;gap:26px;padding:20px 0;}
+  .tc-svg{display:none;}
+  .tc-node{position:relative;top:auto;left:auto;right:auto;bottom:auto;transform:none !important;flex-direction:row;gap:16px;}
+  .tc-node .nl{text-align:right;}
+  .tc-core{order:-1;margin-bottom:10px;}
+}
+
+/* ===================== FOOTER ===================== */
+.closing{
+  position:relative;padding:160px 24px 70px;text-align:center;overflow:hidden;
+}
+.closing-quote{
+  font-size:clamp(22px,3vw,40px);font-weight:800;line-height:1.7;max-width:820px;margin:0 auto 50px;
+  opacity:0;transform:translateY(20px);transition:all 1s var(--ease-cinematic);
+}
+.closing-quote.in-view{opacity:1;transform:translateY(0);}
+.closing-quote em{
+  font-style:normal;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.team-list{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:12px 10px;margin-bottom:60px;
+  opacity:0;transform:translateY(20px);transition:all 1s var(--ease-cinematic) .15s;
+}
+.team-list.in-view{opacity:1;transform:translateY(0);}
+.team-list span{
+  font-size:12.5px;color:var(--text-dim);border:1px solid var(--line);padding:9px 18px;border-radius:40px;
+  letter-spacing:.03em;
+}
+.team-list span b{color:var(--text);font-weight:700;margin-left:6px;}
+.footer-meta{font-size:11.5px;color:var(--text-dim-2);letter-spacing:.08em;line-height:2;}
+.footer-meta a{color:var(--text-dim);}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.2s !important;}
+}
+
+@media (max-width:1180px){
+  .m-scene .container{grid-template-columns:1fr;gap:30px;}
+  .m-visual{height:56vh;}
+  .m-info{padding-left:0;}
+  .container{padding:0 32px;}
+}
+@media (max-width:860px){
+  .container{padding:0 24px;}
+  .topbar{padding:20px 22px;}
+  .system-nav{display:none;}
+  .hero-orbits{flex-wrap:wrap;justify-content:center;row-gap:16px;max-width:320px;}
+  .horb-line{display:none;}
+  .horb .label{opacity:.5;transform:none;}
+  .hero-title{line-height:1.4;}
+}
+@media (max-width:420px){
+  .hero-orbits{max-width:260px;gap:14px;}
+}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="loader-mark">در حال بارگذاری سیستم</div><div class="loader-bar"></div></div>
+
+<div id="top-progress"><span></span></div>
+
+<header class="topbar">
+  <div class="brand"><span class="dot"></span>تیم MIS</div>
+  <div class="course-tag">سیستم‌های اطلاعات مدیریت</div>
+</header>
+
+<div id="cursor-glow" aria-hidden="true"></div>
+
+<div class="ambient" aria-hidden="true">
+  <div class="ambient-orb o1"></div>
+  <div class="ambient-orb o2"></div>
+  <div class="ambient-orb o3"></div>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero section" id="hero">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <p class="hero-eyebrow" data-anim="eyebrow">PROJECT TEAM · MIS 2026</p>
+    <h1 class="hero-title" data-anim="title">پشت هر تصمیم،<br><em>یک تیم هوشمند</em> است.</h1>
+    <p class="hero-subtitle" data-anim="subtitle">معرفی تیم پروژه درس سیستم‌های اطلاعات مدیریت — پنج نقش، یک سیستم واحد.</p>
+    <div class="hero-orbits" data-anim="orbits" role="list" aria-label="نقش‌های تیم">
+      <div class="horb" role="listitem"><span class="ring" aria-hidden="true"></span><span class="label">ANALYST</span></div>
+      <div class="horb-line"></div>
+      <div class="horb" role="listitem"><span class="ring" aria-hidden="true"></span><span class="label">COORDINATOR</span></div>
+      <div class="horb-line"></div>
+      <div class="horb" role="listitem"><span class="ring" aria-hidden="true"></span><span class="label">CREATIVE</span></div>
+      <div class="horb-line"></div>
+      <div class="horb" role="listitem"><span class="ring" aria-hidden="true"></span><span class="label">EXECUTOR</span></div>
+      <div class="horb-line"></div>
+      <div class="horb" role="listitem"><span class="ring" aria-hidden="true"></span><span class="label">FUTURE</span></div>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>SCROLL TO MEET THE TEAM</span><div class="wheel"></div></div>
+</section>
+
+<!-- ===================== SYSTEM NAV ===================== -->
+<nav class="system-nav" id="systemNav" aria-label="پیمایش اعضای تیم">
+  <div class="nav-track">
+    <div class="nav-line"></div>
+    <div class="nav-line-fill" id="navLineFill"></div>
+    <button class="nav-item" data-goto="0"><span class="nt"><span class="ni">01</span><span class="nr">تحلیلگر</span></span><span class="nd"></span></button>
+    <button class="nav-item" data-goto="1"><span class="nt"><span class="ni">02</span><span class="nr">هماهنگ‌کننده</span></span><span class="nd"></span></button>
+    <button class="nav-item" data-goto="2"><span class="nt"><span class="ni">03</span><span class="nr">خلاق</span></span><span class="nd"></span></button>
+    <button class="nav-item" data-goto="3"><span class="nt"><span class="ni">04</span><span class="nr">اجراکننده</span></span><span class="nd"></span></button>
+    <button class="nav-item" data-goto="4"><span class="nt"><span class="ni">05</span><span class="nr">آینده‌نگر</span></span><span class="nd"></span></button>
+  </div>
+</nav>
+
+<!-- ===================== EXPERIENCE ===================== -->
+<section class="experience-track section" id="experienceTrack">
+  <div class="experience-sticky">
+    <div class="scene-stage" id="sceneStage">
+
+      <!-- MEMBER 01 -->
+      <article class="m-scene" data-index="0" aria-hidden="false">
+        <div class="container">
+          <div class="m-visual">
+            <div class="m-glow"></div>
+            <div class="m-frame" data-tilt>
+              <img src="assets/member-01.png" alt="فاطمه فوشنجانی، تحلیلگر تیم">
+              <div class="m-frame-border"></div>
+              <span class="m-tag m-tag--top">ROLE // ANALYST</span>
+              <span class="m-tag m-tag--bottom">01</span>
+            </div>
+            <div class="m-float-el m-float-1"></div>
+            <div class="m-float-el m-float-2"></div>
+          </div>
+          <div class="m-info">
+            <p class="m-info-index"><b>01</b> / 05</p>
+            <p class="m-info-englishrole">SYSTEM ANALYST</p>
+            <h2 class="m-info-name">فاطمه<br>فوشنجانی</h2>
+            <p class="m-info-role">تحلیلگر تیم — تفکر سیستمی و نظم‌بخشی به فرآیندها</p>
+            <div class="m-info-grid">
+              <div class="m-block">
+                <h3>مهارت‌ها</h3>
+                <ul>
+                  <li>اولویت‌بندی پروژه‌ها و منابع</li>
+                  <li>بهینه‌سازی فرآیندها</li>
+                  <li>کار تیمی</li>
+                  <li>فراهم‌سازی منابع و مقالات معتبر</li>
+                </ul>
+              </div>
+              <div class="m-block">
+                <h3>ویژگی بارز</h3>
+                <p>تفکر سیستمی و کل‌نگر<br>مدیریت زمان و چندوظیفگی</p>
+                <h3 style="margin-top:18px">سابقه</h3>
+                <p>مسئول دفتر شرکت ریلی<br>تجربه مدیریت پروژه</p>
+              </div>
+            </div>
+            <blockquote class="m-value">«تصمیم‌های مبتنی بر داده، ایجاد شفافیت و نظم در فرآیندها و کمک به تیم برای انتخاب مسیر درست.»</blockquote>
+          </div>
+        </div>
+        <span class="progress-count"><b>01</b> / 05</span>
+      </article>
+
+      <!-- MEMBER 02 -->
+      <article class="m-scene" data-index="1" aria-hidden="true">
+        <div class="container">
+          <div class="m-visual">
+            <div class="m-glow"></div>
+            <div class="m-frame" data-tilt>
+              <img src="assets/member-02.png" alt="امیرحسین یزدانی، هماهنگ‌کننده تیم">
+              <div class="m-frame-border"></div>
+              <span class="m-tag m-tag--top">ROLE // COORDINATOR</span>
+              <span class="m-tag m-tag--bottom">02</span>
+            </div>
+            <div class="m-float-el m-float-1"></div>
+            <div class="m-float-el m-float-2"></div>
+          </div>
+          <div class="m-info">
+            <p class="m-info-index"><b>02</b> / 05</p>
+            <p class="m-info-englishrole">TEAM COORDINATOR</p>
+            <h2 class="m-info-name">امیرحسین<br>یزدانی</h2>
+            <p class="m-info-role">هماهنگ‌کننده اعضا و کنترل تیم</p>
+            <div class="m-info-grid">
+              <div class="m-block">
+                <h3>مهارت‌ها</h3>
+                <ul>
+                  <li>برنامه‌نویسی</li>
+                  <li>بازاریابی</li>
+                  <li>انعطاف‌پذیری در ارتباطات</li>
+                </ul>
+              </div>
+              <div class="m-block">
+                <h3>ویژگی بارز</h3>
+                <p>مذاکره و ارتباط با افراد جدید</p>
+                <h3 style="margin-top:18px">سابقه</h3>
+                <p>پایان‌رسانی چند پروژه در ترم‌های قبل با مسئولیت هماهنگی و کنترل تیم</p>
+              </div>
+            </div>
+            <blockquote class="m-value">«اگر کسی در انجام وظیفه‌اش به مشکل بخورد یا به کمک نیاز داشته باشد، علاوه بر مسئولیت‌های خودم روی کمک من حساب کند.»</blockquote>
+            <p class="m-micro-quote">« هواتونو دارم، در هر صورت. »</p>
+          </div>
+        </div>
+        <span class="progress-count"><b>02</b> / 05</span>
+      </article>
+
+      <!-- MEMBER 03 -->
+      <article class="m-scene" data-index="2" aria-hidden="true">
+        <div class="container">
+          <div class="m-visual">
+            <div class="m-glow"></div>
+            <div class="m-frame" data-tilt>
+              <img src="assets/member-03.png" alt="آیناز برابی، عضو خلاق تیم">
+              <div class="m-frame-border"></div>
+              <span class="m-tag m-tag--top">ROLE // CREATIVE</span>
+              <span class="m-tag m-tag--bottom">03</span>
+            </div>
+            <div class="m-float-el m-float-1"></div>
+            <div class="m-float-el m-float-2"></div>
+          </div>
+          <div class="m-info">
+            <p class="m-info-index"><b>03</b> / 05</p>
+            <p class="m-info-englishrole">CREATIVE STRATEGIST</p>
+            <h2 class="m-info-name">آیناز<br>برابی</h2>
+            <p class="m-info-role">خلاق و ایده‌پرداز تیم</p>
+            <div class="m-info-grid">
+              <div class="m-block">
+                <h3>مهارت‌ها</h3>
+                <ul>
+                  <li>تولید محتوای متنی</li>
+                  <li>تولید محتوای ویدیویی</li>
+                  <li>ایده‌پردازی</li>
+                  <li>SEO و بهبود محتوای سایت</li>
+                </ul>
+              </div>
+              <div class="m-block">
+                <h3>ویژگی بارز</h3>
+                <p>دقت و توجه به جزئیات<br>مسئولیت‌پذیری</p>
+                <h3 style="margin-top:18px">سابقه</h3>
+                <p>فعالیت در حوزه دیجیتال مارکتینگ، SEO و تولید محتوا</p>
+              </div>
+            </div>
+            <blockquote class="m-value">«نگاه متفاوت به مسائل و توانایی تبدیل ایده‌ها به راهکارها و محتوای کاربردی.»</blockquote>
+          </div>
+        </div>
+        <span class="progress-count"><b>03</b> / 05</span>
+      </article>
+
+      <!-- MEMBER 04 -->
+      <article class="m-scene" data-index="3" aria-hidden="true">
+        <div class="container">
+          <div class="m-visual">
+            <div class="m-glow"></div>
+            <div class="m-frame" data-tilt>
+              <img src="assets/member-04.png" alt="جواد عیسی‌لو، اجراکننده و توسعه‌دهنده تیم">
+              <div class="m-frame-border"></div>
+              <span class="m-tag m-tag--top">ROLE // EXECUTOR</span>
+              <span class="m-tag m-tag--bottom">04</span>
+            </div>
+            <div class="m-float-el m-float-1"></div>
+            <div class="m-float-el m-float-2"></div>
+          </div>
+          <div class="m-info">
+            <p class="m-info-index"><b>04</b> / 05</p>
+            <p class="m-info-englishrole">EXECUTION &amp; DEVELOPMENT</p>
+            <h2 class="m-info-name">جواد<br>عیسی‌لو</h2>
+            <p class="m-info-role">اجراکننده و توسعه‌دهنده تیم</p>
+            <div class="m-info-grid">
+              <div class="m-block">
+                <h3>مهارت‌ها</h3>
+                <ul>
+                  <li>طراحی و توسعه وب، UI/UX</li>
+                  <li>Frontend: React، Next.js، JavaScript، HTML/CSS</li>
+                  <li>Backend: Laravel، Node.js، Python/Flask</li>
+                  <li>وردپرس، SEO و بهینه‌سازی Performance</li>
+                </ul>
+              </div>
+              <div class="m-block">
+                <h3>ویژگی بارز</h3>
+                <p>تبدیل ایده و تحلیل به محصول و خروجی قابل اجرا</p>
+                <h3 style="margin-top:18px">تجربه</h3>
+                <p>بیش از ۷ سال فعالیت حرفه‌ای در طراحی و توسعه وب؛ اجرای پروژه‌های واقعی در سایت، وب‌اپلیکیشن، فروشگاه آنلاین، React/Next.js، Laravel و UI/UX</p>
+              </div>
+            </div>
+            <blockquote class="m-value">«تبدیل ایده‌ها و تصمیم‌های تیم به خروجی واقعی و قابل ارائه؛ از طراحی و معماری تا توسعه و اجرای نهایی.»</blockquote>
+            <p class="m-big-quote">«ایده وقتی ارزش دارد که بتوان آن را اجرا کرد.»</p>
+          </div>
+        </div>
+        <span class="progress-count"><b>04</b> / 05</span>
+      </article>
+
+      <!-- MEMBER 05 -->
+      <article class="m-scene" data-index="4" aria-hidden="true">
+        <div class="container">
+          <div class="m-visual">
+            <div class="m-glow"></div>
+            <div class="m-frame" data-tilt>
+              <img src="assets/member-05.png" alt="مهدی اقلیمی، آینده‌نگر و توسعه‌دهنده تیم">
+              <div class="m-frame-border"></div>
+              <span class="m-tag m-tag--top">ROLE // FUTURE</span>
+              <span class="m-tag m-tag--bottom">05</span>
+            </div>
+            <div class="m-float-el m-float-1"></div>
+            <div class="m-float-el m-float-2"></div>
+          </div>
+          <div class="m-info">
+            <p class="m-info-index"><b>05</b> / 05</p>
+            <p class="m-info-englishrole">FUTURE &amp; BUSINESS DEVELOPMENT</p>
+            <h2 class="m-info-name">مهدی<br>اقلیمی</h2>
+            <p class="m-info-role">آینده‌نگر و توسعه‌دهنده کسب‌وکار</p>
+            <div class="m-info-grid">
+              <div class="m-block">
+                <h3>مهارت‌ها</h3>
+                <ul>
+                  <li>تولید محتوا</li>
+                  <li>فروشندگی</li>
+                  <li>توسعه و گسترش کسب‌وکار</li>
+                </ul>
+              </div>
+              <div class="m-block">
+                <h3>ویژگی بارز</h3>
+                <p>آینده‌نگری، پیگیری، شناخت نیاز</p>
+                <h3 style="margin-top:18px">سابقه</h3>
+                <p>۵ سال تجربه در فروشندگی و ارتباط مستقیم با مشتری</p>
+              </div>
+            </div>
+            <blockquote class="m-value">«نگاه آینده‌نگر، شناخت فرصت‌های رشد و توانایی تبدیل ایده‌ها به راهکارهای عملی برای توسعه بیشتر.»</blockquote>
+          </div>
+        </div>
+        <span class="progress-count"><b>05</b> / 05</span>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TEAM CONNECTION ===================== -->
+<section class="team-connection section" id="teamConnection">
+  <div class="container" style="display:flex;flex-direction:column;align-items:center;">
+    <div class="tc-head" id="tcHead">
+      <p class="tc-eyebrow">یک سیستم واحد</p>
+      <h2 class="tc-title">پنج نقش مستقل نیستند؛ هرکدام بخشی از یک سیستم هوشمندند که در کنار هم کار تیم را کامل می‌کنند.</h2>
+    </div>
+    <div class="tc-diagram" id="tcDiagram">
+      <svg class="tc-svg" viewBox="0 0 980 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs>
+          <linearGradient id="tcgrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#8B5CF6"/>
+            <stop offset="100%" stop-color="#22D3EE"/>
+          </linearGradient>
+        </defs>
+        <line x1="490" y1="280" x2="490" y2="20"></line>
+        <line x1="490" y1="280" x2="860" y2="110"></line>
+        <line x1="490" y1="280" x2="760" y2="470"></line>
+        <line x1="490" y1="280" x2="220" y2="470"></line>
+        <line x1="490" y1="280" x2="120" y2="110"></line>
+      </svg>
+      <div class="tc-core"><b>TEAM</b><span>سیستم واحد</span></div>
+      <div class="tc-node tc-n1"><span class="nd">01</span><span class="nl">ANALYZE<b>تحلیل</b></span></div>
+      <div class="tc-node tc-n2"><span class="nd">02</span><span class="nl">COORDINATE<b>هماهنگی</b></span></div>
+      <div class="tc-node tc-n3"><span class="nd">03</span><span class="nl">CREATE<b>خلق ایده</b></span></div>
+      <div class="tc-node tc-n4"><span class="nd">04</span><span class="nl">EXECUTE<b>اجرا</b></span></div>
+      <div class="tc-node tc-n5"><span class="nd">05</span><span class="nl">GROW<b>رشد و آینده</b></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CLOSING ===================== -->
+<footer class="closing section">
+  <p class="closing-quote" id="closingQuote">از <em>تحلیل داده‌ها</em> تا <em>اجرای نهایی</em>، این تیم با هم یک تصمیم هوشمند می‌سازد.</p>
+  <div class="team-list" id="teamList">
+    <span>۰۱ <b>فاطمه فوشنجانی</b></span>
+    <span>۰۲ <b>امیرحسین یزدانی</b></span>
+    <span>۰۳ <b>آیناز برابی</b></span>
+    <span>۰۴ <b>جواد عیسی‌لو</b></span>
+    <span>۰۵ <b>مهدی اقلیمی</b></span>
+  </div>
+  <p class="footer-meta">پروژه درس سیستم‌های اطلاعات مدیریت · طراحی و توسعه: جواد عیسی‌لو<br>Interactive Team Presentation — ساخته‌شده با ❤ برای ارائه کلاسی</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- LOADER ---------- */
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      document.getElementById('loader').classList.add('hide');
+      runHeroIntro();
+    }, 600);
+  });
+
+  /* ---------- TOP PROGRESS BAR ---------- */
+  var topProgressSpan = document.querySelector('#top-progress span');
+  function updateTopProgress(){
+    var h = document.documentElement;
+    var scrolled = h.scrollTop;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? scrolled / max : 0;
+    topProgressSpan.style.transform = 'scaleX(' + p + ')';
+  }
+
+  /* ---------- CURSOR GLOW + TILT (desktop, fine pointer only) ---------- */
+  var isFinePointer = window.matchMedia('(pointer:fine)').matches;
+  var cursorGlow = document.getElementById('cursor-glow');
+  var mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
+  var glowX = mouseX, glowY = mouseY;
+
+  if(!isFinePointer || reduceMotion){ cursorGlow.style.display = 'none'; }
+
+  window.addEventListener('mousemove', function(e){
+    mouseX = e.clientX; mouseY = e.clientY;
+  }, {passive:true});
+
+  function rafGlow(){
+    glowX += (mouseX - glowX) * 0.12;
+    glowY += (mouseY - glowY) * 0.12;
+    if(isFinePointer && !reduceMotion){
+      cursorGlow.style.transform = 'translate(' + glowX + 'px,' + glowY + 'px) translate(-50%,-50%)';
+    }
+    requestAnimationFrame(rafGlow);
+  }
+  requestAnimationFrame(rafGlow);
+
+  /* subtle 3D tilt on active portrait frame */
+  var activeTiltFrame = null;
+  function bindTilt(){
+    if(!isFinePointer || reduceMotion) return;
+    document.addEventListener('mousemove', function(e){
+      var frames = document.querySelectorAll('.m-scene[data-index] .m-frame');
+      frames.forEach(function(frame){
+        var scene = frame.closest('.m-scene');
+        if(parseFloat(scene.style.opacity || '0') < 0.4) return;
+        var r = frame.getBoundingClientRect();
+        var cx = r.left + r.width/2, cy = r.top + r.height/2;
+        var dx = (e.clientX - cx) / (r.width/2);
+        var dy = (e.clientY - cy) / (r.height/2);
+        dx = Math.max(-1, Math.min(1, dx));
+        dy = Math.max(-1, Math.min(1, dy));
+        frame.style.transform = 'rotateY(' + (dx*6) + 'deg) rotateX(' + (dy*-6) + 'deg)';
+      });
+    }, {passive:true});
+  }
+  bindTilt();
+
+  /* ---------- HERO CANVAS PARTICLE NETWORK ---------- */
+  var canvas = document.getElementById('hero-canvas');
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var heroEl = document.getElementById('hero');
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var PCOUNT = window.innerWidth < 760 ? 26 : 56;
+  var animFrame = null;
+  var canvasRunning = true;
+
+  function resizeCanvas(){
+    var w = heroEl.clientWidth, h = heroEl.clientHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    canvas.style.width = w+'px'; canvas.style.height = h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function initParticles(){
+    particles = [];
+    var w = heroEl.clientWidth, h = heroEl.clientHeight;
+    for(var i=0;i<PCOUNT;i++){
+      particles.push({
+        x: Math.random()*w, y: Math.random()*h,
+        vx: (Math.random()-0.5)*0.18, vy: (Math.random()-0.5)*0.18,
+        r: Math.random()*1.6+0.6
+      });
+    }
+  }
+  function drawParticles(){
+    if(!canvasRunning) return;
+    var w = heroEl.clientWidth, h = heroEl.clientHeight;
+    ctx.clearRect(0,0,w,h);
+    var px = (mouseX/window.innerWidth - 0.5) * 14;
+    var py = (mouseY/window.innerHeight - 0.5) * 14;
+
+    for(var i=0;i<particles.length;i++){
+      var p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < 0) p.x = w; if(p.x > w) p.x = 0;
+      if(p.y < 0) p.y = h; if(p.y > h) p.y = 0;
+    }
+    for(var i=0;i<particles.length;i++){
+      for(var j=i+1;j<particles.length;j++){
+        var a = particles[i], b = particles[j];
+        var dx = a.x-b.x, dy = a.y-b.y;
+        var dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist < 130){
+          ctx.strokeStyle = 'rgba(139,92,246,' + (0.14 * (1-dist/130)) + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x+px, a.y+py);
+          ctx.lineTo(b.x+px, b.y+py);
+          ctx.stroke();
+        }
+      }
+    }
+    for(var i=0;i<particles.length;i++){
+      var p = particles[i];
+      ctx.beginPath();
+      ctx.arc(p.x+px, p.y+py, p.r, 0, Math.PI*2);
+      ctx.fillStyle = (i % 5 === 0) ? 'rgba(34,211,238,0.55)' : 'rgba(255,255,255,0.35)';
+      ctx.fill();
+    }
+    animFrame = requestAnimationFrame(drawParticles);
+  }
+  resizeCanvas(); initParticles();
+  if(!reduceMotion){ drawParticles(); } else {
+    canvasRunning = true; drawParticles(); canvasRunning=false;
+  }
+  window.addEventListener('resize', debounce(function(){
+    resizeCanvas(); initParticles();
+  }, 250));
+  document.addEventListener('visibilitychange', function(){
+    canvasRunning = !document.hidden && !reduceMotion;
+    if(canvasRunning) drawParticles();
+  });
+
+  function debounce(fn, wait){
+    var t; return function(){ clearTimeout(t); var args=arguments, ctx=this; t=setTimeout(function(){fn.apply(ctx,args);}, wait); };
+  }
+
+  /* ---------- HERO INTRO (GSAP) ---------- */
+  function runHeroIntro(){
+    if(typeof gsap === 'undefined') return;
+    var tl = gsap.timeline({defaults:{ease:'power3.out'}});
+    tl.to('.hero-eyebrow', {opacity:1, y:0, duration:.8}, 0.1)
+      .fromTo('.hero-title', {opacity:0, y:34}, {opacity:1, y:0, duration:1.1}, 0.25)
+      .fromTo('.hero-subtitle', {opacity:0, y:24}, {opacity:1, y:0, duration:1}, 0.55)
+      .fromTo('.hero-orbits', {opacity:0, y:18}, {opacity:1, y:0, duration:1}, 0.75)
+      .to('.scroll-cue', {opacity:1, duration:1}, 1.1);
+  }
+
+  /* ---------- SCROLL REVEAL (GSAP ScrollTrigger, with IO fallback) ---------- */
+  var revealTargets = document.querySelectorAll('#tcHead, #tcDiagram, #closingQuote, #teamList');
+  if(typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined'){
+    gsap.registerPlugin(ScrollTrigger);
+    revealTargets.forEach(function(t){
+      ScrollTrigger.create({
+        trigger: t,
+        start: 'top 82%',
+        once: true,
+        onEnter: function(){ t.classList.add('in-view'); }
+      });
+    });
+  } else if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+        }
+      });
+    }, {threshold:0.3});
+    revealTargets.forEach(function(t){ io.observe(t); });
+  } else {
+    revealTargets.forEach(function(t){ t.classList.add('in-view'); });
+  }
+
+  /* ---------- SYSTEM NAV + SCENE CROSSFADE ---------- */
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('.m-scene'));
+  var navItems = Array.prototype.slice.call(document.querySelectorAll('.nav-item'));
+  var navFill = document.getElementById('navLineFill');
+  var systemNav = document.getElementById('systemNav');
+  var track = document.getElementById('experienceTrack');
+  var N = scenes.length;
+  var smooth = 0, rawTarget = 0;
+  var desktopMode = window.matchMedia('(min-width:861px)').matches;
+
+  function setActiveNav(idx){
+    navItems.forEach(function(it, i){
+      it.classList.toggle('active', i === idx);
+    });
+    if(navFill){
+      var total = navItems.length - 1;
+      var pct = total > 0 ? (idx/total) : 0;
+      navFill.style.height = (pct*100) + '%';
+    }
+  }
+
+  function applySceneStyles(){
+    scenes.forEach(function(scene, i){
+      var diff = smooth - i;
+      var absDiff = Math.abs(diff);
+      var opacity = Math.max(0, 1 - absDiff*1.6);
+      var scale, blur;
+      if(diff >= 0){
+        scale = 1 + Math.min(diff,1)*0.08;
+        blur = Math.min(diff,1)*8;
+      } else {
+        scale = 1 - Math.min(-diff,1)*0.04;
+        blur = Math.min(-diff,1)*8;
+      }
+      var infoShift = diff * -46;
+      var zIndex = Math.round((1-Math.min(absDiff,1))*10);
+
+      scene.style.opacity = opacity;
+      scene.style.filter = blur > 0.05 ? 'blur(' + blur.toFixed(2) + 'px)' : 'none';
+      scene.style.zIndex = zIndex;
+      scene.style.pointerEvents = opacity > 0.6 ? 'auto' : 'none';
+      scene.setAttribute('aria-hidden', opacity > 0.6 ? 'false' : 'true');
+
+      var visual = scene.querySelector('.m-visual');
+      var info = scene.querySelector('.m-info');
+      if(visual) visual.style.transform = 'scale(' + scale.toFixed(4) + ')';
+      if(info) info.style.transform = 'translateY(' + infoShift.toFixed(1) + 'px)';
+    });
+
+    var activeIdx = Math.round(Math.max(0, Math.min(N-1, smooth)));
+    setActiveNav(activeIdx);
+  }
+
+  function getProgress(){
+    var rect = track.getBoundingClientRect();
+    var total = track.offsetHeight - window.innerHeight;
+    if(total <= 0) return 0;
+    var p = (-rect.top) / total;
+    return Math.max(0, Math.min(1, p));
+  }
+
+  function loop(){
+    if(desktopMode && !reduceMotion){
+      rawTarget = getProgress() * (N-1);
+      smooth += (rawTarget - smooth) * 0.14;
+      if(Math.abs(rawTarget - smooth) < 0.001) smooth = rawTarget;
+      applySceneStyles();
+    }
+    updateTopProgress();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  /* show/hide system nav based on scroll position relative to experience track */
+  function toggleSystemNav(){
+    if(!desktopMode){ systemNav.classList.remove('visible'); return; }
+    var heroRect = heroEl.getBoundingClientRect();
+    var trackRect = track.getBoundingClientRect();
+    var show = heroRect.bottom < window.innerHeight*0.6 && trackRect.bottom > window.innerHeight*0.4;
+    systemNav.classList.toggle('visible', show);
+  }
+  window.addEventListener('scroll', toggleSystemNav, {passive:true});
+  toggleSystemNav();
+
+  navItems.forEach(function(item){
+    item.addEventListener('click', function(){
+      var idx = parseInt(item.getAttribute('data-goto'), 10);
+      var total = track.offsetHeight - window.innerHeight;
+      var targetProgress = total > 0 ? idx/(N-1) : 0;
+      var targetScroll = track.offsetTop + targetProgress*total;
+      window.scrollTo({top: targetScroll, behavior: reduceMotion ? 'auto' : 'smooth'});
+    });
+  });
+
+  /* ---------- MOBILE FALLBACK: reveal scenes with IntersectionObserver ---------- */
+  function setupMobileReveal(){
+    if('IntersectionObserver' in window){
+      var mio = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting) entry.target.classList.add('in-view');
+        });
+      }, {threshold:0.2});
+      scenes.forEach(function(s){ mio.observe(s); });
+    } else {
+      scenes.forEach(function(s){ s.classList.add('in-view'); });
+    }
+  }
+  if(!desktopMode || reduceMotion){
+    scenes.forEach(function(s){
+      s.style.opacity = ''; s.style.filter=''; s.style.zIndex='';
+      var v = s.querySelector('.m-visual'); if(v) v.style.transform='';
+      var inf = s.querySelector('.m-info'); if(inf) inf.style.transform='';
+    });
+    setupMobileReveal();
+  }
+
+  window.addEventListener('resize', debounce(function(){
+    var nowDesktop = window.matchMedia('(min-width:861px)').matches;
+    if(nowDesktop !== desktopMode){
+      desktopMode = nowDesktop;
+      location.reload();
+    }
+  }, 400));
+
+  /* TEAM CONNECTION in-view trigger for diagram + head already in revealTargets */
+
+})();
+</script>
+</body>
+</html>
