@@ -228,6 +228,7 @@ a{color:inherit;}
 /* ===================== EXPERIENCE ===================== */
 .experience-track{
   position:relative;
+  height:700vh; /* fallback; recalculated precisely by JS (scenes.length * viewport) */
 }
 .experience-sticky{
   position:sticky;top:0;height:100vh;overflow:hidden;
@@ -331,6 +332,7 @@ a{color:inherit;}
 
 /* ===================== MOBILE / REDUCED-MOTION FALLBACK SCENE STYLES ===================== */
 @media (max-width:860px), (prefers-reduced-motion: reduce){
+  .experience-track{height:auto !important;}
   .experience-sticky{position:static;height:auto;display:block;padding:0;}
   .scene-stage{height:auto;}
   .m-scene{
@@ -967,6 +969,18 @@ a{color:inherit;}
   var N = scenes.length;
   var smooth = 0, rawTarget = 0;
   var desktopMode = window.matchMedia('(min-width:861px)').matches;
+
+  /* give the sticky track real scroll distance: N viewport-heights of scroll room
+     per member so the pinned scene has space to crossfade through all members. */
+  function setTrackHeight(){
+    if(desktopMode && !reduceMotion){
+      track.style.height = (N * 150) + 'vh';
+    } else {
+      track.style.height = 'auto';
+    }
+  }
+  setTrackHeight();
+  window.addEventListener('resize', debounce(setTrackHeight, 200));
 
   function setActiveNav(idx){
     navItems.forEach(function(it, i){
