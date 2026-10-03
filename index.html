@@ -362,12 +362,12 @@ a{color:inherit;}
 .tc-eyebrow{font-size:12px;letter-spacing:.3em;color:var(--accent-2);font-weight:700;margin-bottom:16px;}
 .tc-title{font-size:clamp(26px,3.6vw,46px);font-weight:800;max-width:720px;margin:0 auto;line-height:1.6;}
 .tc-diagram{
-  position:relative;width:100%;max-width:980px;height:560px;display:flex;align-items:center;justify-content:center;
+  position:relative;width:100%;max-width:640px;aspect-ratio:1/1;margin:0 auto;display:flex;align-items:center;justify-content:center;
 }
-.tc-svg{position:absolute;inset:0;width:100%;height:100%;}
+.tc-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
 .tc-svg line, .tc-svg path{
-  stroke:var(--line);stroke-width:1.2;fill:none;
-  stroke-dasharray:400;stroke-dashoffset:400;transition:stroke-dashoffset 1.4s var(--ease-cinematic), stroke 1.4s ease;
+  stroke:var(--line);stroke-width:.4;fill:none;vector-effect:non-scaling-stroke;
+  stroke-dasharray:60;stroke-dashoffset:60;transition:stroke-dashoffset 1.4s var(--ease-cinematic), stroke 1.4s ease;
 }
 .tc-diagram.in-view .tc-svg line, .tc-diagram.in-view .tc-svg path{stroke-dashoffset:0;stroke:url(#tcgrad);}
 .tc-core{
@@ -382,9 +382,10 @@ a{color:inherit;}
 .tc-core b{font-size:22px;font-weight:800;letter-spacing:.08em;}
 .tc-node{
   position:absolute;display:flex;flex-direction:column;align-items:center;gap:10px;
-  opacity:0;transform:translateY(16px) scale(.9);transition:all .8s var(--ease-cinematic);
+  transform:translate(-50%,-50%) translateY(16px) scale(.9);
+  opacity:0;transition:all .8s var(--ease-cinematic);
 }
-.tc-diagram.in-view .tc-node{opacity:1;transform:translateY(0) scale(1);}
+.tc-diagram.in-view .tc-node{opacity:1;transform:translate(-50%,-50%) translateY(0) scale(1);}
 .tc-node .nd{
   width:58px;height:58px;border-radius:50%;border:1px solid var(--line);
   background:var(--graphite);display:flex;align-items:center;justify-content:center;
@@ -394,16 +395,19 @@ a{color:inherit;}
 .tc-node .nl{font-size:10px;letter-spacing:.16em;color:var(--text-dim-2);font-weight:700;white-space:nowrap;}
 .tc-node .nl b{display:block;font-size:12.5px;color:var(--text-dim);margin-top:2px;letter-spacing:.04em;}
 
-.tc-n1{top:0;left:50%;transform:translateX(-50%);}
-.tc-n2{top:16%;right:4%;}
-.tc-n3{bottom:16%;right:10%;}
-.tc-n4{bottom:16%;left:10%;}
-.tc-n5{top:16%;left:4%;}
+/* pentagon layout — node position (%) must stay numerically identical to the
+   <line> endpoints drawn in the inline SVG (viewBox 0 0 100 100) so every
+   role, including the Analyst (01), is visibly wired into the TEAM core. */
+.tc-n1{left:50%;top:12%;}
+.tc-n2{left:86%;top:38%;}
+.tc-n3{left:72%;top:81%;}
+.tc-n4{left:28%;top:81%;}
+.tc-n5{left:14%;top:38%;}
 
 @media (max-width:860px){
-  .tc-diagram{height:auto;flex-direction:column;gap:26px;padding:20px 0;}
+  .tc-diagram{height:auto;aspect-ratio:auto;max-width:420px;flex-direction:column;gap:26px;padding:20px 0;}
   .tc-svg{display:none;}
-  .tc-node{position:relative;top:auto;left:auto;right:auto;bottom:auto;transform:none !important;flex-direction:row;gap:16px;}
+  .tc-node{position:relative;left:auto;top:auto;transform:none !important;flex-direction:row;gap:16px;}
   .tc-node .nl{text-align:right;}
   .tc-core{order:-1;margin-bottom:10px;}
 }
@@ -740,18 +744,20 @@ a{color:inherit;}
       <h2 class="tc-title">پنج نقش مستقل نیستند؛ هرکدام بخشی از یک سیستم هوشمندند که در کنار هم کار تیم را کامل می‌کنند.</h2>
     </div>
     <div class="tc-diagram" id="tcDiagram">
-      <svg class="tc-svg" viewBox="0 0 980 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <svg class="tc-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
         <defs>
           <linearGradient id="tcgrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#8B5CF6"/>
             <stop offset="100%" stop-color="#22D3EE"/>
           </linearGradient>
         </defs>
-        <line x1="490" y1="280" x2="490" y2="20"></line>
-        <line x1="490" y1="280" x2="860" y2="110"></line>
-        <line x1="490" y1="280" x2="760" y2="470"></line>
-        <line x1="490" y1="280" x2="220" y2="470"></line>
-        <line x1="490" y1="280" x2="120" y2="110"></line>
+        <!-- each line endpoint matches its .tc-nX left/top % exactly, so all 5 roles
+             (including 01 Analyst) are clearly wired into the TEAM core -->
+        <line x1="50" y1="50" x2="50" y2="12"></line>
+        <line x1="50" y1="50" x2="86" y2="38"></line>
+        <line x1="50" y1="50" x2="72" y2="81"></line>
+        <line x1="50" y1="50" x2="28" y2="81"></line>
+        <line x1="50" y1="50" x2="14" y2="38"></line>
       </svg>
       <div class="tc-core"><b>TEAM</b><span>سیستم واحد</span></div>
       <div class="tc-node tc-n1"><span class="nd">01</span><span class="nl">ANALYZE<b>تحلیل</b></span></div>
@@ -994,19 +1000,34 @@ a{color:inherit;}
   }
 
   function applySceneStyles(){
+    /* PLATEAU: a generous "dead zone" around each exact member index where the
+       scene stays perfectly sharp (opacity 1 / blur 0 / no scale drift). This
+       means the user does not need to stop scrolling at one exact pixel for
+       the content to look crisp — only once they scroll meaningfully toward
+       the next/previous member does the cinematic cross-fade kick in. */
+    var PLATEAU = 0.26;
     scenes.forEach(function(scene, i){
       var diff = smooth - i;
       var absDiff = Math.abs(diff);
-      var opacity = Math.max(0, 1 - absDiff*1.6);
-      var scale, blur;
-      if(diff >= 0){
-        scale = 1 + Math.min(diff,1)*0.08;
-        blur = Math.min(diff,1)*8;
+      var opacity, blur, scale, infoShift;
+
+      if(absDiff <= PLATEAU){
+        opacity = 1;
+        blur = 0;
+        scale = 1;
+        infoShift = 0;
       } else {
-        scale = 1 - Math.min(-diff,1)*0.04;
-        blur = Math.min(-diff,1)*8;
+        var t = Math.min(1, (absDiff - PLATEAU) / (1 - PLATEAU));
+        opacity = Math.max(0, 1 - t);
+        blur = t * 8;
+        if(diff >= 0){
+          scale = 1 + t*0.08;
+        } else {
+          scale = 1 - t*0.04;
+        }
+        infoShift = (diff >= 0 ? 1 : -1) * t * -46;
       }
-      var infoShift = diff * -46;
+
       var zIndex = Math.round((1-Math.min(absDiff,1))*10);
 
       scene.style.opacity = opacity;
@@ -1045,6 +1066,44 @@ a{color:inherit;}
   }
   requestAnimationFrame(loop);
 
+  /* ---------- SNAP-TO-MEMBER WHEN SCROLL IDLES ----------
+     If the user stops scrolling somewhere between two members, gently finish
+     the scroll to the nearest member so the scene always settles perfectly
+     sharp instead of being left mid-transition/blurred. Only runs while the
+     sticky experience is actually pinned, on desktop, with motion allowed. */
+  var snapIdleTimer = null;
+  var isAutoSnapping = false;
+  var autoSnapReleaseTimer = null;
+
+  function isTrackPinned(){
+    var rect = track.getBoundingClientRect();
+    return rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
+  }
+
+  function trySnap(){
+    if(!desktopMode || reduceMotion || isAutoSnapping) return;
+    if(!isTrackPinned()) return;
+    var total = track.offsetHeight - window.innerHeight;
+    if(total <= 0) return;
+    var progress = getProgress();
+    var rawIdx = progress * (N-1);
+    var nearest = Math.round(rawIdx);
+    if(Math.abs(rawIdx - nearest) < 0.02) return; // already essentially settled
+    var targetProgress = nearest / (N-1);
+    var targetScroll = track.offsetTop + targetProgress*total;
+
+    isAutoSnapping = true;
+    window.scrollTo({top: targetScroll, behavior:'smooth'});
+    clearTimeout(autoSnapReleaseTimer);
+    autoSnapReleaseTimer = setTimeout(function(){ isAutoSnapping = false; }, 700);
+  }
+
+  window.addEventListener('scroll', function(){
+    if(isAutoSnapping) return;
+    clearTimeout(snapIdleTimer);
+    snapIdleTimer = setTimeout(trySnap, 150);
+  }, {passive:true});
+
   /* show/hide system nav based on scroll position relative to experience track */
   function toggleSystemNav(){
     if(!desktopMode){ systemNav.classList.remove('visible'); return; }
@@ -1055,6 +1114,7 @@ a{color:inherit;}
   }
   window.addEventListener('scroll', toggleSystemNav, {passive:true});
   toggleSystemNav();
+
 
   navItems.forEach(function(item){
     item.addEventListener('click', function(){
