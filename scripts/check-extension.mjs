@@ -13,15 +13,26 @@ if (manifest.action.default_popup !== "popup.html" || manifest.options_ui.page !
   throw new Error("Popup or Options page path is inconsistent");
 }
 if (!manifest.commands["toggle-dictation"]?.global) throw new Error("The toggle shortcut must be global and configurable");
-if (manifest.permissions.includes("<all_urls>") || manifest.host_permissions.includes("<all_urls>")) {
+if (manifest.permissions.includes("<all_urls>") || manifest.host_permissions?.includes("<all_urls>")) {
   throw new Error("Broad all-sites permission is not allowed");
+}
+if (manifest.host_permissions?.length || manifest.optional_host_permissions?.length) {
+  throw new Error("This Chrome-only build must not request host permissions");
 }
 if (!manifest.content_security_policy?.extension_pages?.includes("script-src 'self'")) {
   throw new Error("A restrictive extension-page CSP is required");
 }
 
+const offscreenSource = await readFile(new URL("offscreen.js", root), "utf8");
+if (!/self\.SpeechRecognition\s*\|\|\s*self\.webkitSpeechRecognition/.test(offscreenSource)) {
+  throw new Error("Chrome's built-in SpeechRecognition API must be the only recognition engine");
+}
+if (/\bWebSocket\b|fetch\s*\(/u.test(offscreenSource)) {
+  throw new Error("Offscreen recognition must not implement a separate network STT client");
+}
+
 const files = [
-  "background.js", "offscreen.html", "offscreen.js", "audio-worklet.js", "popup.html", "popup.js",
+  "background.js", "offscreen.html", "offscreen.js", "popup.html", "popup.js",
   "popup.css", "options.html", "options.js", "options.css", "content.js", "shared.js",
   "icons/icon16.png", "icons/icon32.png", "icons/icon48.png", "icons/icon128.png"
 ];

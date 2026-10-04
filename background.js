@@ -13,9 +13,13 @@ async function getSettings() {
   return sanitizeSettings(cachedSettings);
 }
 
-function publicSettings(settings) {
-  const { tokenBrokerUrl, brokerAccessToken, ...safeSettings } = settings;
-  return safeSettings;
+function recognitionSettings(settings) {
+  return {
+    language: settings.language,
+    continuousMode: settings.continuousMode,
+    autoRestart: settings.autoRestart,
+    interimResults: settings.interimResults
+  };
 }
 
 function statusSettings(settings) {
@@ -54,7 +58,7 @@ async function ensureOffscreenDocument() {
     offscreenCreating = chrome.offscreen.createDocument({
       url: "offscreen.html",
       reasons: ["USER_MEDIA", "CLIPBOARD"],
-      justification: "Capture microphone audio only while the user has explicitly started voice typing, and provide optional clipboard voice commands."
+      justification: "Run Chrome's built-in SpeechRecognition only after the user starts voice typing, and provide optional clipboard voice commands."
     });
   }
   try { await offscreenCreating; }
@@ -105,7 +109,7 @@ async function startSessionImpl(tabId = null) {
       startedAt: Date.now(),
       lastTranscript: "",
       interimText: "",
-      language: "auto",
+      language: settings.language,
       engine: settings.engine,
       restartCount: 0,
       fallbackReason: "",
@@ -114,8 +118,7 @@ async function startSessionImpl(tabId = null) {
     };
     await publishState(session);
     sessionPublished = true;
-    const offscreenSettings = { ...publicSettings(settings), tokenBrokerUrl: "", brokerAccessToken: "" };
-    const response = await sendToOffscreen({ type: "OFFSCREEN_START", sessionId, settings: offscreenSettings, providerConfigured: Boolean(settings.tokenBrokerUrl && settings.brokerAccessToken) });
+    const response = await sendToOffscreen({ type: "OFFSCREEN_START", sessionId, settings: recognitionSettings(settings) });
     if (!response?.ok) throw new Error(response?.error || "موتور تشخیص شروع نشد.");
     return { ok: true, state: await getSession() };
   } catch (error) {
@@ -168,55 +171,6 @@ async function toggleSession(tabId = null) {
   const state = await getSession();
   if (state.active || ["starting", "listening", "processing", "reconnecting", "stopping"].includes(state.status)) return stopSession();
   return startSession(tabId);
-}
-
-function brokerEndpoint(raw) {
-  const url = new URL(raw);
-  const local = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
-  if (url.username || url.password || url.search || url.hash) throw new Error("نشانی Broker نباید شامل اطلاعات ورود، Query یا Fragment باشد.");
-  if (url.protocol !== "https:" && !(url.protocol === "http:" && local)) {
-    throw new Error("Token Broker باید از HTTPS استفاده کند؛ HTTP فقط برای localhost مجاز است.");
-  }
-  if (url.pathname !== "/v1/session-token") throw new Error("نشانی Broker باید دقیقاً به /v1/session-token ختم شود.");
-  return url;
-}
-
-function brokerOriginPattern(url) {
-  // Chrome match patterns do not include ports; fetch still uses the exact configured URL.
-  return `${url.protocol}//${url.hostname}/*`;
-}
-
-async function requestTemporaryKey(sessionId) {
-  const settings = await getSettings();
-  if (!settings.tokenBrokerUrl || !settings.brokerAccessToken) throw new Error("برای Soniox، Token Broker را در تنظیمات پیکربندی کنید.");
-  let url;
-  try { url = brokerEndpoint(settings.tokenBrokerUrl); }
-  catch (error) { throw new Error(error.message || "نشانی Token Broker معتبر نیست."); }
-  const originPattern = brokerOriginPattern(url);
-  const allowed = await chrome.permissions.contains({ origins: [originPattern] });
-  if (!allowed) throw new Error("مجوز اتصال به Token Broker داده نشده است. در Options روی «ذخیره و اجازهٔ اتصال» بزنید.");
-  let response;
-  try {
-    response = await fetch(url.href, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${settings.brokerAccessToken}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ client_reference_id: String(sessionId || "voice-typing").slice(0, 100) }),
-      cache: "no-store",
-      credentials: "omit",
-      signal: AbortSignal.timeout(12000)
-    });
-  } catch (error) {
-    if (error?.name === "TimeoutError") throw new Error("پاسخ Token Broker بیش از حد طول کشید.");
-    throw new Error("اتصال به Token Broker برقرار نشد. نشانی، مجوز سایت و اینترنت را بررسی کنید.");
-  }
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok || typeof payload.api_key !== "string") {
-    throw new Error(payload.error || `صدور کلید موقت ناموفق بود (HTTP ${response.status}).`);
-  }
-  return payload.api_key;
 }
 
 function addDebugLog(entry) {
@@ -440,18 +394,6 @@ async function handleMessage(message, sender) {
       }
       return { ok: true };
     }
-    case "BROKER_GET_TEMP_KEY": {
-      const state = await getSession();
-      if (state.sessionId && message.sessionId && state.sessionId !== message.sessionId) return { ok: false, error: "نشست تشخیص تغییر کرده است." };
-      try { return { ok: true, apiKey: await requestTemporaryKey(message.sessionId) }; }
-      catch (error) { return { ok: false, error: error.message || "دریافت کلید موقت شکست خورد." }; }
-    }
-    case "BROKER_TEST": {
-      try {
-        const apiKey = await requestTemporaryKey(`test-${Date.now()}`);
-        return { ok: Boolean(apiKey), message: "اتصال برقرار شد؛ کلید موقت مصرف‌نشده است و به‌زودی منقضی می‌شود." };
-      } catch (error) { return { ok: false, error: error.message || "آزمون Broker شکست خورد." }; }
-    }
     case "VT_SET_FLOATING_VISIBLE": {
       const settings = await getSettings();
       settings.showFloating = Boolean(message.visible);
@@ -474,7 +416,19 @@ chrome.commands.onCommand.addListener((command) => {
 
 chrome.runtime.onInstalled.addListener(async () => {
   const existing = await chrome.storage.local.get("settings");
-  if (!existing.settings) await chrome.storage.local.set({ settings: DEFAULT_SETTINGS });
+  const settings = sanitizeSettings(existing.settings || DEFAULT_SETTINGS);
+  cachedSettings = settings;
+  // Persist migration to Chrome-only speech and erase any obsolete stored Broker credentials.
+  await chrome.storage.local.set({ settings });
+  const granted = await chrome.permissions.getAll();
+  if (granted.origins?.length) {
+    try { await chrome.permissions.remove({ origins: granted.origins }); } catch { /* removed host grants are no longer used */ }
+  }
+  const previousSession = await getSession();
+  if (previousSession.active && previousSession.sessionId) {
+    try { await sendToOffscreen({ type: "OFFSCREEN_STOP", sessionId: previousSession.sessionId }); } catch { /* the old offscreen document may already be gone */ }
+  }
+  await publishState({ active: false, status: "ready", engine: "webspeech", interimText: "", fallbackReason: "", error: "" }, { sendToTab: false });
   await chrome.action.setBadgeText({ text: "" });
 });
 

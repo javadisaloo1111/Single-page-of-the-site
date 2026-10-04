@@ -1,6 +1,6 @@
 {
-  "name": "vocabulary-voice-typing-extension",
-  "version": "1.0.0",
+  "name": "voca-type-chrome-extension",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {

@@ -32,7 +32,7 @@ function renderStatus(state = {}) {
   $("#statusCard").dataset.state = status;
   $("#statusLabel").textContent = title;
   $("#statusSub").textContent = subtitle;
-  $("#languageBadge").textContent = state.language && state.language !== "auto" ? state.language.toUpperCase() : (currentSettings?.language === "auto" ? "Auto · FA/EN/AR" : (currentSettings?.language || "Auto").toUpperCase());
+  $("#languageBadge").textContent = state.language && state.language !== "auto" ? state.language.toUpperCase() : (currentSettings?.language === "auto" ? "Auto · Chrome" : (currentSettings?.language || "Auto").toUpperCase());
   $("#toggleBtn").classList.toggle("stop", Boolean(state.active));
   $("#toggleBtn").disabled = ["starting", "stopping"].includes(status);
   $("#toggleBtn").querySelector("span:last-child").textContent = state.active ? "توقف تایپ صوتی" : "شروع تایپ صوتی";
@@ -45,8 +45,7 @@ function renderStatus(state = {}) {
   interim.textContent = state.interimText || "";
   interim.classList.toggle("hidden", !state.interimText);
   showError(state.error || "");
-  const fallback = state.fallbackReason || state.limitation || (state.engine === "webspeech" && currentSettings?.engine !== "webspeech" ? "حالت fallback مرورگر، تشخیص مختلط زبان‌ها را تضمین نمی‌کند." : "");
-  showNotice(fallback);
+  showNotice(state.fallbackReason || state.limitation || "");
 }
 
 async function load() {

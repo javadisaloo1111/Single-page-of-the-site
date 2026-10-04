@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "VocaType — تایپ صوتی",
-  "version": "1.0.0",
-  "description": "تایپ صوتی چندزبانه با حفظ فارسی و واژه‌های انگلیسی، فرمان صوتی و ورود متن در محل مکان‌نما.",
+  "version": "1.1.0",
+  "description": "تایپ صوتی با SpeechRecognition داخلی Chrome، حفظ فارسی و واژه‌های انگلیسی، فرمان صوتی و درج متن در محل مکان‌نما.",
   "minimum_chrome_version": "116",
   "permissions": [
     "activeTab",
@@ -14,14 +14,6 @@
   "optional_permissions": [
     "clipboardRead",
     "clipboardWrite"
-  ],
-  "host_permissions": [
-    "https://stt-rt.soniox.com/*"
-  ],
-  "optional_host_permissions": [
-    "https://*/*",
-    "http://localhost/*",
-    "http://127.0.0.1/*"
   ],
   "background": {
     "service_worker": "background.js",
@@ -52,7 +44,7 @@
     }
   },
   "content_security_policy": {
-    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'self'; style-src 'self'; connect-src 'self' https: wss: http://localhost:* http://127.0.0.1:*; img-src 'self' data:;"
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:;"
   },
   "icons": {
     "16": "icons/icon16.png",

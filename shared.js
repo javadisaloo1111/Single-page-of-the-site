@@ -8,7 +8,7 @@ export const BUILTIN_VOCABULARY = [
 ];
 
 export const DEFAULT_SETTINGS = Object.freeze({
-  engine: "auto",
+  engine: "webspeech",
   language: "auto",
   continuousMode: true,
   autoRestart: true,
@@ -24,8 +24,6 @@ export const DEFAULT_SETTINGS = Object.freeze({
   historyLimit: 50,
   debugMode: false,
   customVocabulary: [],
-  tokenBrokerUrl: "",
-  brokerAccessToken: "",
   floatingPosition: { right: 22, bottom: 22 }
 });
 
@@ -58,7 +56,8 @@ const NUMBER_UNITS = /^(?:تومان|ریال|درصد|سال|ماه|روز|دق
 
 export function sanitizeSettings(raw = {}) {
   const settings = { ...DEFAULT_SETTINGS, ...raw };
-  settings.engine = ["auto", "soniox", "webspeech"].includes(settings.engine) ? settings.engine : "auto";
+  // Migrate older stored configurations to Chrome's native Web Speech API only.
+  settings.engine = "webspeech";
   settings.language = ["auto", "fa", "en", "ar"].includes(settings.language) ? settings.language : "auto";
   settings.digitStyle = ["fa", "en"].includes(settings.digitStyle) ? settings.digitStyle : "fa";
   settings.historyLimit = Math.min(200, Math.max(10, Number.parseInt(settings.historyLimit, 10) || 50));
@@ -69,8 +68,9 @@ export function sanitizeSettings(raw = {}) {
         .map((entry) => ({ word: entry.word.trim().slice(0, 80), replacement: entry.replacement.trim().slice(0, 80) }))
         .filter((entry) => entry.word && entry.replacement)
     : [];
-  settings.tokenBrokerUrl = typeof settings.tokenBrokerUrl === "string" ? settings.tokenBrokerUrl.trim().slice(0, 500) : "";
-  settings.brokerAccessToken = typeof settings.brokerAccessToken === "string" ? settings.brokerAccessToken.trim().slice(0, 500) : "";
+  // Drop obsolete credentials from prior versions during local settings migration.
+  delete settings.tokenBrokerUrl;
+  delete settings.brokerAccessToken;
   settings.floatingPosition = raw.floatingPosition && Number.isFinite(raw.floatingPosition.right) && Number.isFinite(raw.floatingPosition.bottom)
     ? { right: Math.max(0, Math.min(800, raw.floatingPosition.right)), bottom: Math.max(0, Math.min(800, raw.floatingPosition.bottom)) }
     : { ...DEFAULT_SETTINGS.floatingPosition };
@@ -284,7 +284,7 @@ export function getSpeechErrorMessage(errorCode) {
   if (["unsupported", "service-not-allowed", "language-not-supported"].includes(code)) {
     return "موتور تشخیص گفتار یا زبان انتخاب‌شده در این مرورگر پشتیبانی نمی‌شود.";
   }
-  return "در تشخیص گفتار خطایی رخ داد. دوباره تلاش کنید یا تنظیمات موتور را بررسی کنید.";
+  return "در تشخیص گفتار خطایی رخ داد. دوباره تلاش کنید یا مجوزهای Chrome و میکروفون را بررسی کنید.";
 }
 
 export function getWebSpeechLanguage(language = "auto", browserLanguage = "fa-IR") {
@@ -292,8 +292,4 @@ export function getWebSpeechLanguage(language = "auto", browserLanguage = "fa-IR
   if (language === "ar") return "ar-SA";
   if (language === "fa") return "fa-IR";
   return /^en/i.test(browserLanguage) ? "en-US" : /^ar/i.test(browserLanguage) ? "ar-SA" : "fa-IR";
-}
-
-export function hasProviderConfiguration(settings) {
-  return Boolean(settings?.tokenBrokerUrl && settings?.brokerAccessToken);
 }

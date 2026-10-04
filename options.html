@@ -27,28 +27,23 @@
 
     <main class="content">
       <section id="general" class="settings-section">
-        <div class="section-header"><div><p class="eyebrow">PREFERENCES</p><h1>تنظیمات عمومی</h1><p>زبان و رفتار پایهٔ دیکته را انتخاب کنید.</p></div><div class="header-badge">نسخهٔ ۱.۰</div></div>
+        <div class="section-header"><div><p class="eyebrow">PREFERENCES</p><h1>تنظیمات عمومی</h1><p>زبان و رفتار پایهٔ دیکته را انتخاب کنید.</p></div><div class="header-badge">نسخهٔ ۱.۱</div></div>
         <div class="card form-grid">
-          <label class="field"><span>زبان گفتار</span><select id="language"><option value="auto">تشخیص خودکار · فارسی / English / العربية</option><option value="fa">فارسی</option><option value="en">English</option><option value="ar">العربية</option></select><small>برای تشخیص واقعی جابه‌جایی زبان، موتور ابری چندزبانه لازم است.</small></label>
-          <label class="field"><span>موتور تشخیص</span><select id="engine"><option value="auto">خودکار · سرویس ابری، سپس fallback مرورگر</option><option value="soniox">Soniox real-time (پیشنهادی برای Mixed Language)</option><option value="webspeech">Web Speech API مرورگر</option></select><small id="engineHint">اگر Token Broker تنظیم نشده باشد، حالت خودکار از موتور مرورگر استفاده می‌کند.</small></label>
+          <label class="field"><span>زبان گفتار</span><select id="language"><option value="auto">پیش‌فرض مرورگر · در غیر این صورت فارسی</option><option value="fa">فارسی</option><option value="en">English</option><option value="ar">العربية</option></select><small>زبان انتخابی به SpeechRecognition داخلی Chrome داده می‌شود؛ آن را با زبان غالب گفتار هماهنگ کنید.</small></label>
+          <div class="field"><span>موتور تشخیص</span><strong>SpeechRecognition داخلی Chrome</strong><small id="engineHint">بدون API key یا سرویس STT شخص ثالث در اکستنشن.</small></div>
           <div class="field"><span>میانبر شروع / توقف</span><button class="secondary-button" id="shortcutBtn">مشاهده و تغییر میانبر</button><small id="shortcutValue">Ctrl+Shift+2</small></div>
           <div class="field"><span>Float Indicator داخل صفحه</span><label class="toggle-row"><span>نمایش نشانگر هنگام ضبط</span><input id="showFloating" type="checkbox"><i></i></label><small>نشانگر را می‌توان کشید، کوچک یا مخفی کرد.</small></div>
         </div>
       </section>
 
       <section id="engine" class="settings-section">
-        <div class="section-header"><div><p class="eyebrow">RECOGNITION</p><h2>موتور و اتصال</h2><p>حالت ابری چندزبانه یا موتور داخلی مرورگر.</p></div></div>
+        <div class="section-header"><div><p class="eyebrow">CHROME WEB SPEECH</p><h2>تشخیص گفتار داخلی Chrome</h2><p>VocaType از Web Speech API مرورگر استفاده می‌کند و صدا را به سرویس STT جداگانه‌ای ارسال نمی‌کند.</p></div></div>
         <div class="card">
-          <div class="privacy-banner"><span>✦</span><div><strong>حالت پیشنهادی برای فارسی + English</strong><p>Soniox متن را به شکل real-time می‌فرستد و برای Code-switching طراحی شده است. در این حالت جریان صدا برای پردازش به سرویس ابری ارسال می‌شود.</p></div></div>
-          <div class="form-grid two-col broker-fields">
-            <label class="field span-2"><span>نشانی Token Broker</span><input id="tokenBrokerUrl" type="url" placeholder="https://your-domain.example/v1/session-token" autocomplete="url"><small>برای اجرای محلی: http://localhost:8787/v1/session-token</small></label>
-            <label class="field span-2"><span>Access Token مربوط به Broker</span><input id="brokerAccessToken" type="password" placeholder="توکن شخصی Broker" autocomplete="new-password"><small>کلید دائمی Soniox را اینجا وارد نکنید. Broker نمونه در پوشهٔ broker قرار دارد.</small></label>
-            <div class="field span-2 button-row"><button class="primary-small" id="saveBrokerBtn">ذخیره و اجازهٔ اتصال</button><button class="secondary-button" id="testBrokerBtn">آزمون اتصال</button><button class="danger-outline" id="clearBrokerBtn">قطع اتصال و حذف توکن</button><span id="brokerStatus" class="inline-status"></span></div>
-          </div>
+          <div class="privacy-banner"><span>ⓘ</span><div><strong>محدودیت زبان و حریم خصوصی</strong><p>Chrome ممکن است صدای گفتار را برای تشخیص به سرویس گفتار Google بفرستد؛ رفتار دقیق به نسخهٔ Chrome و زبان بستگی دارد و پردازش کاملاً محلی تضمین‌شده نیست. این API برای جابه‌جایی هم‌زمان فارسی، English و عربی تضمین تشخیص قابل‌اعتماد نمی‌دهد؛ زبان انتخابی را با زبان غالب گفتار هماهنگ کنید.</p></div></div>
           <div class="check-list compact-list">
             <label class="toggle-row"><span><strong>نمایش متن موقت</strong><small>پیش‌نمایش interim؛ ممکن است با ادامهٔ گفتار اصلاح شود.</small></span><input id="interimResults" type="checkbox"><i></i></label>
-            <label class="toggle-row"><span><strong>حالت پیوسته</strong><small>پس از هر جمله شنیدن ادامه پیدا کند.</small></span><input id="continuousMode" type="checkbox"><i></i></label>
-            <label class="toggle-row"><span><strong>اتصال مجدد خودکار</strong><small>در قطع موقت سرویس، با backoff محدود دوباره تلاش شود.</small></span><input id="autoRestart" type="checkbox"><i></i></label>
+            <label class="toggle-row"><span><strong>حالت پیوسته</strong><small>پس از هر جمله شنیدن ادامه پیدا کند؛ محدودیت‌های زمانی Chrome ممکن است باعث توقف و شروع مجدد شود.</small></span><input id="continuousMode" type="checkbox"><i></i></label>
+            <label class="toggle-row"><span><strong>اتصال مجدد خودکار</strong><small>پس از پایان یا قطع نشست تشخیص Chrome، با تأخیر محدود دوباره شروع شود.</small></span><input id="autoRestart" type="checkbox"><i></i></label>
           </div>
         </div>
       </section>
@@ -66,7 +61,7 @@
       </section>
 
       <section id="dictionary" class="settings-section">
-        <div class="section-header"><div><p class="eyebrow">VOCABULARY</p><h2>واژگان فنی و شخصی</h2><p>واژه‌های سفارشی هنگام استفاده از Soniox به‌عنوان context برای سرویس فرستاده می‌شوند؛ در دستگاه فقط برای استانداردسازی transcript به‌کار می‌روند.</p></div></div>
+        <div class="section-header"><div><p class="eyebrow">VOCABULARY</p><h2>واژگان فنی و شخصی</h2><p>واژه‌های سفارشی فقط پس از تشخیص، روی دستگاه برای استانداردسازی شکل transcript به‌کار می‌روند؛ به سرویس گفتار فرستاده نمی‌شوند و دقت آکوستیکی تشخیص را افزایش نمی‌دهند.</p></div></div>
         <div class="card">
           <div id="builtinTerms" class="term-cloud"></div>
           <div class="divider"></div>
@@ -100,10 +95,10 @@
       <section id="privacy" class="settings-section">
         <div class="section-header"><div><p class="eyebrow">PRIVACY & PERMISSIONS</p><h2>حریم خصوصی</h2><p>رفتار واقعی ذخیره‌سازی و انتقال داده.</p></div></div>
         <div class="card privacy-grid">
-          <div class="privacy-item"><span class="privacy-icon">🎙</span><div><strong>صوت خام</strong><p>در حافظهٔ موقت پردازش می‌شود؛ Extension آن را روی دیسک ذخیره نمی‌کند.</p></div></div>
-          <div class="privacy-item"><span class="privacy-icon">☁</span><div><strong>ارسال به سرور</strong><p>Soniox: صدا حین Listening از طریق WebSocket به سرویس ابری فرستاده می‌شود. Web Speech: وابسته به Chrome و زبان است؛ محلی‌بودن تضمین نیست.</p></div></div>
+          <div class="privacy-item"><span class="privacy-icon">🎙</span><div><strong>صوت خام</strong><p>VocaType فایل صوتی را ضبط یا ذخیره نمی‌کند؛ Chrome برای تشخیص از میکروفون استفاده می‌کند و ممکن است صدا را به سرویس Google بفرستد.</p></div></div>
+          <div class="privacy-item"><span class="privacy-icon">☁</span><div><strong>ارسال برای تشخیص</strong><p>اکستنشن از API گفتار داخلی Chrome استفاده می‌کند. Chrome ممکن است صدا را برای تشخیص به سرویس Google بفرستد؛ محلی‌بودن پردازش تضمین نیست و به مرورگر و زبان وابسته است.</p></div></div>
           <div class="privacy-item"><span class="privacy-icon">▤</span><div><strong>متن و تاریخچه</strong><p>آخرین متن فقط در نشست مرورگر نگهداری می‌شود؛ تاریخچه به‌صورت پیش‌فرض خاموش و در صورت فعال‌شدن محدود است.</p></div></div>
-          <div class="privacy-item"><span class="privacy-icon">⌁</span><div><strong>کلیدها و مجوزها</strong><p>کلید دائمی STT فقط در Broker می‌ماند. Access Token Broker در storage محلی Chrome است؛ آن را با کسی به اشتراک نگذارید.</p></div></div>
+          <div class="privacy-item"><span class="privacy-icon">⌁</span><div><strong>واژگان و مجوزها</strong><p>واژگان سفارشی و تنظیمات فقط در storage محلی Chrome هستند. این اکستنشن کلید API یا اتصال به سرویس STT شخص ثالث ندارد. مجوزهای Clipboard تنها در صورت درخواست شما فعال می‌شوند.</p></div></div>
           <div class="button-row"><button class="secondary-button" id="clipboardReadBtn">اجازهٔ Paste صوتی</button><button class="secondary-button" id="clipboardWriteBtn">اجازهٔ Copy صوتی</button><span id="permissionStatus" class="inline-status"></span></div>
         </div>
       </section>

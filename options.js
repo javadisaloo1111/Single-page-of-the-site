@@ -1,7 +1,7 @@
 import { BUILTIN_VOCABULARY, DEFAULT_SETTINGS, sanitizeSettings } from "./shared.js";
 
 const $ = (selector) => document.querySelector(selector);
-const fields = ["language", "engine", "showFloating", "tokenBrokerUrl", "brokerAccessToken", "interimResults", "continuousMode", "autoRestart", "smartPunctuation", "normalizeText", "persianHalfSpace", "preserveEnglishWords", "digitStyle", "voiceCommands", "historyEnabled", "historyLimit", "debugMode"];
+const fields = ["language", "showFloating", "interimResults", "continuousMode", "autoRestart", "smartPunctuation", "normalizeText", "persianHalfSpace", "preserveEnglishWords", "digitStyle", "voiceCommands", "historyEnabled", "historyLimit", "debugMode"];
 let settings = { ...DEFAULT_SETTINGS };
 let historyItems = [];
 let dirty = false;
@@ -126,13 +126,8 @@ function renderHistory() {
 }
 
 function updateEngineHint() {
-  const engine = $("#engine").value;
   const hint = $("#engineHint");
-  hint.textContent = engine === "soniox"
-    ? "برای شروع باید Broker امن و کلید دسترسی آن را پیکربندی کنید."
-    : engine === "webspeech"
-      ? "زبان fallback از تنظیم انتخابی استفاده می‌کند؛ تشخیص هم‌زمان چند زبان تضمین نیست."
-      : "اگر Broker تنظیم نشود، حالت خودکار از موتور مرورگر استفاده می‌کند و محدودیت Mixed Language دارد.";
+  if (hint) hint.textContent = "SpeechRecognition داخلی Chrome؛ رفتار ارسال صوت به سرویس Google به مرورگر و زبان وابسته است.";
 }
 
 async function load() {
@@ -158,15 +153,8 @@ async function load() {
   }
 }
 
-async function saveSettings({ includeBroker = false } = {}) {
+async function saveSettings() {
   const next = readForm();
-  if (!includeBroker) {
-    // Broker settings are saved only by the explicit authorization action.
-    next.tokenBrokerUrl = settings.tokenBrokerUrl;
-    next.brokerAccessToken = settings.brokerAccessToken;
-    $("#tokenBrokerUrl").value = settings.tokenBrokerUrl;
-    $("#brokerAccessToken").value = settings.brokerAccessToken;
-  }
   const previousHistory = settings.historyEnabled;
   const response = await chrome.runtime.sendMessage({ type: "SAVE_SETTINGS", settings: next });
   if (!response?.ok) throw new Error(response?.error || "ذخیره تنظیمات ناموفق بود.");
@@ -187,72 +175,9 @@ async function saveSettings({ includeBroker = false } = {}) {
   return settings;
 }
 
-function brokerPattern(raw) {
-  const url = new URL(raw);
-  const local = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
-  if (url.username || url.password || url.search || url.hash) throw new Error("نشانی Broker نباید شامل اطلاعات ورود، Query یا Fragment باشد.");
-  if (url.protocol !== "https:" && !(url.protocol === "http:" && local)) throw new Error("برای Broker، HTTPS لازم است؛ HTTP فقط برای localhost مجاز است.");
-  if (url.pathname !== "/v1/session-token") throw new Error("نشانی باید دقیقاً به /v1/session-token ختم شود.");
-  // Chrome match patterns intentionally omit the port; fetch still uses the exact entered URL.
-  return `${url.protocol}//${url.hostname}/*`;
-}
-
 $("#saveBtn").addEventListener("click", async () => {
   try { await saveSettings(); }
   catch (error) { $("#saveMessage").textContent = error.message; $("#saveMessage").style.color = "#bd4148"; }
-});
-
-$("#saveBrokerBtn").addEventListener("click", async () => {
-  const status = $("#brokerStatus");
-  try {
-    const url = $("#tokenBrokerUrl").value.trim();
-    const token = $("#brokerAccessToken").value.trim();
-    if (!url || !token) throw new Error("نشانی Broker و Access Token را وارد کنید.");
-    const originPattern = brokerPattern(url);
-    let previousPattern = "";
-    try { if (settings.tokenBrokerUrl) previousPattern = brokerPattern(settings.tokenBrokerUrl); } catch { /* ignore stale setting */ }
-    // Request the optional host permission directly from the button gesture.
-    const granted = await chrome.permissions.request({ origins: [originPattern] });
-    if (!granted) throw new Error("مجوز اتصال به Broker داده نشد.");
-    settings.tokenBrokerUrl = url;
-    settings.brokerAccessToken = token;
-    await saveSettings({ includeBroker: true });
-    if (previousPattern && previousPattern !== originPattern) {
-      try { await chrome.permissions.remove({ origins: [previousPattern] }); } catch { /* previous URL may be obsolete */ }
-    }
-    setStatus(status, "Broker ذخیره شد و مجوز اتصال فعال است.");
-  } catch (error) { setStatus(status, error.message || "ذخیره Broker ناموفق بود.", true); }
-});
-
-$("#clearBrokerBtn").addEventListener("click", async () => {
-  if (!confirm("تنظیمات Broker و Access Token از این مرورگر پاک و مجوز میزبان حذف شود؟")) return;
-  const previousPattern = settings.tokenBrokerUrl ? (() => { try { return brokerPattern(settings.tokenBrokerUrl); } catch { return ""; } })() : "";
-  if (previousPattern) {
-    try { await chrome.permissions.remove({ origins: [previousPattern] }); } catch { /* continue clearing local token */ }
-  }
-  settings.tokenBrokerUrl = "";
-  settings.brokerAccessToken = "";
-  $("#tokenBrokerUrl").value = "";
-  $("#brokerAccessToken").value = "";
-  try {
-    await saveSettings({ includeBroker: true });
-    setStatus($("#brokerStatus"), "تنظیمات Broker و مجوز میزبان پاک شدند.");
-  } catch (error) {
-    setStatus($("#brokerStatus"), error.message || "پاک‌کردن Broker ناموفق بود.", true);
-  }
-});
-
-$("#testBrokerBtn").addEventListener("click", async () => {
-  const status = $("#brokerStatus");
-  try {
-    await saveSettings({ includeBroker: true });
-    const pattern = brokerPattern(settings.tokenBrokerUrl);
-    if (!(await chrome.permissions.contains({ origins: [pattern] }))) throw new Error("ابتدا «ذخیره و اجازهٔ اتصال» را بزنید تا دسترسی Broker فعال شود.");
-    setStatus(status, "در حال بررسی…");
-    const result = await chrome.runtime.sendMessage({ type: "BROKER_TEST" });
-    if (!result?.ok) throw new Error(result?.error || "آزمون ناموفق بود.");
-    setStatus(status, result.message || "اتصال برقرار است.");
-  } catch (error) { setStatus(status, error.message || "Broker در دسترس نیست.", true); }
 });
 
 $("#shortcutBtn").addEventListener("click", () => chrome.runtime.sendMessage({ type: "OPEN_SHORTCUTS" }));
@@ -281,10 +206,7 @@ $("#clearHistoryBtn").addEventListener("click", async () => {
 });
 
 $("#resetBtn").addEventListener("click", async () => {
-  if (!confirm("تنظیمات به حالت اولیه برگردد؟ اطلاعات Broker و مجوز میزبان هم پاک می‌شود.")) return;
-  if (settings.tokenBrokerUrl) {
-    try { await chrome.permissions.remove({ origins: [brokerPattern(settings.tokenBrokerUrl)] }); } catch { /* continue resetting local settings */ }
-  }
+  if (!confirm("تنظیمات به حالت اولیه برگردد؟")) return;
   settings = { ...DEFAULT_SETTINGS, floatingPosition: { ...DEFAULT_SETTINGS.floatingPosition } };
   fillForm(settings);
   await chrome.runtime.sendMessage({ type: "SAVE_SETTINGS", settings });
@@ -315,7 +237,6 @@ $("#clearDebugBtn").addEventListener("click", async () => {
   $("#debugLog").textContent = "گزارش پاک شد.";
 });
 
-$("#engine").addEventListener("change", updateEngineHint);
 fields.forEach((key) => {
   const element = document.getElementById(key);
   element?.addEventListener("change", markDirty);
