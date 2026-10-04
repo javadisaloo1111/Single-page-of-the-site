@@ -4,6 +4,7 @@ const SESSION_KEY = "activeSession";
 let offscreenCreating = null;
 let startPromise = null;
 let stopPromise = null;
+let utteranceQueue = Promise.resolve();
 let cachedSettings = null;
 
 async function getSettings() {
@@ -306,7 +307,11 @@ async function handleOffscreenMessage(message, sender) {
     return;
   }
   if (message.type === "OFFSCREEN_UTTERANCE") {
-    await processUtterance(message);
+    utteranceQueue = utteranceQueue
+      .catch(() => {})
+      .then(() => processUtterance(message))
+      .catch((error) => addDebugLog({ type: "utterance-processing-error", message: error?.message || "unknown" }));
+    await utteranceQueue;
     return;
   }
   if (message.type === "OFFSCREEN_ERROR") {

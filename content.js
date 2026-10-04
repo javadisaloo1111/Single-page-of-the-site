@@ -6,6 +6,7 @@
   let settings = null;
   let lastEditable = null;
   let selectionSnapshot = null;
+  let lastInsertedSnapshot = null;
   let floatingHost = null;
   let floatingRoot = null;
   let floatingText = null;
@@ -73,17 +74,26 @@
 
   function rememberFocused(event) {
     const editable = closestEditable(event.target);
-    if (editable) captureSelection(editable);
+    if (editable) {
+      lastInsertedSnapshot = null;
+      captureSelection(editable);
+    }
   }
 
   document.addEventListener("focusin", rememberFocused, true);
   document.addEventListener("mouseup", () => {
     const editable = closestEditable(document.activeElement) || lastEditable;
-    if (editable) captureSelection(editable);
+    if (editable) {
+      lastInsertedSnapshot = null;
+      captureSelection(editable);
+    }
   }, true);
   document.addEventListener("keyup", (event) => {
     const editable = closestEditable(event.target) || closestEditable(document.activeElement);
-    if (editable) captureSelection(editable);
+    if (editable) {
+      lastInsertedSnapshot = null;
+      captureSelection(editable);
+    }
   }, true);
   document.addEventListener("selectionchange", () => {
     const active = closestEditable(document.activeElement);
@@ -95,6 +105,14 @@
 
   function selectionForInsert() {
     const active = closestEditable(document.activeElement);
+    const lastInserted = lastInsertedSnapshot;
+    if (lastInserted?.element?.isConnected && isEditable(lastInserted.element)
+      && (!active || active === lastInserted.element || active === floatingHost)
+      && getValueSnapshot(lastInserted.element) === lastInserted.after) {
+      return lastInserted.kind === "control"
+        ? { ...lastInserted }
+        : { ...lastInserted, range: lastInserted.range?.cloneRange() || null };
+    }
     if (active && active !== floatingHost) return captureSelection(active);
     if (selectionSnapshot?.element?.isConnected && isEditable(selectionSnapshot.element)) return selectionSnapshot;
     if (lastEditable?.isConnected && isEditable(lastEditable)) return captureSelection(lastEditable);
@@ -166,9 +184,13 @@
       if (setter) setter.call(element, updated); else element.value = updated;
       try { element.setSelectionRange(start + inserted.length, start + inserted.length); } catch { /* type does not support selection */ }
     }
-    const after = element.value;
     dispatchInput(element, inserted, "insertText");
-    captureSelection(element);
+    const after = element.value;
+    const cursor = Math.max(0, Math.min(after.length, start + inserted.length));
+    try { element.setSelectionRange(cursor, cursor); } catch { /* unsupported input type */ }
+    selectionSnapshot = { element, start: cursor, end: cursor, kind: "control" };
+    lastInsertedSnapshot = { element, start: cursor, end: cursor, after, kind: "control" };
+    lastEditable = element;
     saveSnapshot(element, before, after, inserted, trackForCopy);
     return { ok: true, insertedText: inserted };
   }
@@ -221,6 +243,12 @@
     }
     const after = element.innerHTML;
     captureSelection(element);
+    lastInsertedSnapshot = {
+      element,
+      range: selectionSnapshot?.element === element ? selectionSnapshot.range?.cloneRange() || null : null,
+      after,
+      kind: "editable"
+    };
     saveSnapshot(element, before, after, text, trackForCopy);
     return { ok: true, insertedText: text };
   }

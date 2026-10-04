@@ -27,12 +27,13 @@ const offscreenSource = await readFile(new URL("offscreen.js", root), "utf8");
 if (!/self\.SpeechRecognition\s*\|\|\s*self\.webkitSpeechRecognition/.test(offscreenSource)) {
   throw new Error("Chrome's built-in SpeechRecognition API must be the only recognition engine");
 }
-if (/\bWebSocket\b|fetch\s*\(/u.test(offscreenSource)) {
+const speechEngineSource = await readFile(new URL("webspeech-engine.js", root), "utf8");
+if (/\bWebSocket\b|fetch\s*\(/u.test(`${offscreenSource}\n${speechEngineSource}`)) {
   throw new Error("Offscreen recognition must not implement a separate network STT client");
 }
 
 const files = [
-  "background.js", "offscreen.html", "offscreen.js", "popup.html", "popup.js",
+  "background.js", "offscreen.html", "offscreen.js", "webspeech-engine.js", "popup.html", "popup.js",
   "popup.css", "options.html", "options.js", "options.css", "content.js", "shared.js",
   "icons/icon16.png", "icons/icon32.png", "icons/icon48.png", "icons/icon128.png"
 ];

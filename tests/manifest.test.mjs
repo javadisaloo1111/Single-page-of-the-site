@@ -7,7 +7,7 @@ const manifest = JSON.parse(await readFile(new URL("../manifest.json", import.me
 
 test("uses only Chrome's built-in Web Speech API with a least-privilege MV3 manifest", () => {
   assert.equal(manifest.manifest_version, 3);
-  assert.equal(manifest.version, "1.2.0");
+  assert.equal(manifest.version, "1.3.0");
   assert.equal(manifest.background.type, "module");
   assert.ok(manifest.permissions.includes("offscreen"));
   assert.ok(manifest.commands["toggle-dictation"].global);

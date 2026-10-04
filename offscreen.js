@@ -1,4 +1,5 @@
-import { getSpeechErrorMessage, getWebSpeechLanguage, sanitizeSettings } from "./shared.js";
+import { getSpeechErrorMessage, sanitizeSettings } from "./shared.js";
+import { WebSpeechEngine } from "./webspeech-engine.js";
 
 let activeSession = null;
 let startLock = null;
@@ -8,15 +9,23 @@ let pendingInterim = null;
 let interimTimer = null;
 const cancelledSessions = new Set();
 const scheduledSessionStops = new Map();
+const pendingUtterances = new Set();
 
 function emit(type, payload = {}) {
-  if (!activeSession && type !== "OFFSCREEN_ERROR") return;
-  chrome.runtime.sendMessage({
+  if (!activeSession && type !== "OFFSCREEN_ERROR") return Promise.resolve();
+  return chrome.runtime.sendMessage({
     target: "background",
     type,
     sessionId: activeSession?.sessionId ?? payload.sessionId,
     ...payload
   }).catch(() => {});
+}
+
+function emitUtterance(payload) {
+  const pending = emit("OFFSCREEN_UTTERANCE", payload);
+  pendingUtterances.add(pending);
+  pending.finally(() => pendingUtterances.delete(pending));
+  return pending;
 }
 
 function emitInterim(text, language, engine = "webspeech") {
@@ -73,101 +82,6 @@ function asFriendlyError(error) {
   return getSpeechErrorMessage(name);
 }
 
-class WebSpeechEngine {
-  constructor({ settings, onInterim, onUtterance, onState, onError }) {
-    this.settings = settings;
-    this.onInterim = onInterim;
-    this.onUtterance = onUtterance;
-    this.onState = onState;
-    this.onError = onError;
-    this.recognition = null;
-    this.active = false;
-    this.finalBuffer = "";
-    this.interimBuffer = "";
-    this.flushTimer = null;
-    this.restartTimer = null;
-    this.stoppedByUser = false;
-    this.restartCount = 0;
-  }
-
-  start() {
-    const Recognition = self.SpeechRecognition || self.webkitSpeechRecognition;
-    if (!Recognition) throw Object.assign(new Error("Speech Recognition پشتیبانی نمی‌شود."), { name: "unsupported" });
-    this.stoppedByUser = false;
-    this.active = true;
-    this.recognition = new Recognition();
-    this.recognition.lang = getWebSpeechLanguage(this.settings.language);
-    this.recognition.continuous = Boolean(this.settings.continuousMode);
-    this.recognition.interimResults = Boolean(this.settings.interimResults);
-    this.recognition.maxAlternatives = 1;
-    this.recognition.onstart = () => this.onState("listening", {
-      engine: "webspeech",
-      limitation: "استفاده از SpeechRecognition داخلی Chrome است؛ پردازش ممکن است به سرویس گفتار Google وابسته باشد و تشخیص code-switch فارسی/English/عربی تضمین نمی‌شود."
-    });
-    this.recognition.onresult = (event) => {
-      let interim = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        const transcript = result?.[0]?.transcript || "";
-        if (result.isFinal) this.finalBuffer = (this.finalBuffer + transcript).slice(-8000);
-        else interim += transcript;
-      }
-      this.interimBuffer = interim.slice(-4000);
-      this.onInterim(this.finalBuffer + this.interimBuffer, null);
-      if (this.finalBuffer.trim()) {
-        clearTimeout(this.flushTimer);
-        this.flushTimer = setTimeout(() => this.flush(), 700);
-      }
-    };
-    this.recognition.onerror = (event) => {
-      const code = event.error || "unknown";
-      const fatal = ["not-allowed", "service-not-allowed", "audio-capture", "language-not-supported"].includes(code);
-      this.onError(getSpeechErrorMessage(code), { code, recoverable: !fatal });
-      if (fatal) this.stop(false);
-    };
-    this.recognition.onend = () => {
-      const hadTranscript = this.flush();
-      if (this.stoppedByUser || !this.active) return;
-      if (!this.settings.autoRestart || !this.settings.continuousMode) {
-        this.active = false;
-        scheduleSessionStop(activeSession?.sessionId, hadTranscript ? 150 : 0);
-        return;
-      }
-      this.restartCount++;
-      this.onState("reconnecting", { engine: "webspeech", restartCount: this.restartCount });
-      clearTimeout(this.restartTimer);
-      this.restartTimer = setTimeout(() => {
-        if (!this.active || this.stoppedByUser) return;
-        try { this.recognition?.start(); }
-        catch (error) {
-          if (error?.name === "InvalidStateError") return;
-          this.onError(getSpeechErrorMessage(error?.name), { recoverable: true });
-        }
-      }, Math.min(300 * this.restartCount, 2000));
-    };
-    this.recognition.start();
-  }
-
-  flush() {
-    clearTimeout(this.flushTimer);
-    const text = this.finalBuffer + this.interimBuffer;
-    this.finalBuffer = "";
-    this.interimBuffer = "";
-    const hasText = Boolean(text.trim());
-    if (hasText) this.onUtterance(text, null);
-    this.onInterim("", null);
-    return hasText;
-  }
-
-  stop(userInitiated = true) {
-    this.stoppedByUser = userInitiated;
-    this.active = false;
-    clearTimeout(this.flushTimer);
-    clearTimeout(this.restartTimer);
-    this.flush();
-    try { this.recognition?.stop(); } catch { /* recognition may already be stopped */ }
-  }
-}
 
 async function stopActiveSession({ userInitiated = true, sessionId = null, notify = true } = {}) {
   if (sessionId && scheduledSessionStops.has(sessionId)) {
@@ -186,6 +100,7 @@ async function stopActiveSession({ userInitiated = true, sessionId = null, notif
   pendingInterim = null;
   emit("OFFSCREEN_STATUS", { status: "stopping", engine: "webspeech" });
   try { session.engine.stop(userInitiated); } catch { /* cleanup continues */ }
+  while (pendingUtterances.size) await Promise.allSettled([...pendingUtterances]);
   activeSession = null;
   if (notify) chrome.runtime.sendMessage({ target: "background", type: "OFFSCREEN_STATUS", sessionId: session.sessionId, status: "ready", engine: "webspeech" }).catch(() => {});
   return { ok: true, status: "ready" };
@@ -198,6 +113,7 @@ async function startWebSpeech(sessionId, settings) {
   lastInterimAt = 0;
   lastInterimText = "";
   const engine = new WebSpeechEngine({
+    Recognition: self.SpeechRecognition || self.webkitSpeechRecognition,
     settings,
     onInterim: (text, language) => {
       if (activeSession?.sessionId === sessionId && activeSession.status !== "stopping") {
@@ -205,10 +121,11 @@ async function startWebSpeech(sessionId, settings) {
       }
     },
     onUtterance: (text, language) => {
-      if (activeSession?.sessionId !== sessionId || activeSession.status === "stopping") return;
-      emit("OFFSCREEN_UTTERANCE", { text, language, engine: "webspeech", utteranceId: crypto.randomUUID() });
-      if (!settings.continuousMode) scheduleSessionStop(sessionId, 150);
+      if (activeSession?.sessionId !== sessionId) return;
+      // stop() flushes its final buffer after the session status switches to stopping.
+      emitUtterance({ text, language, engine: "webspeech", utteranceId: crypto.randomUUID() });
     },
+    onSessionEnd: ({ hadTranscript }) => scheduleSessionStop(sessionId, hadTranscript ? 150 : 0),
     onState: (status, details = {}) => {
       if (activeSession?.sessionId === sessionId) setEngineStatus(status, { ...details, engine: "webspeech" });
     },
