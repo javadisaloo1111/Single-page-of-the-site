@@ -141,9 +141,10 @@ npm test
 
 ```bash
 npm run verify   # بررسی ایستا: manifest، ترتیب content scriptها، CSP، ایمپورت‌ها، eval/remote-code
-npm test         # ۱۲۷ تست خودکار (NLP، موتورها، کنترلر، درج DOM، سناریوهای end-to-end، امنیت)
+npm run lint     # ESLint (no-undef، بدون var، قواعد کیفیت کد)
+npm test         # ۱۲۸ تست خودکار (NLP، موتورها، کنترلر، درج DOM، سناریوهای end-to-end، امنیت)
 npm run icons    # بازتولید آیکن‌ها بدون وابستگی خارجی
-npm run check    # verify + test
+npm run check    # verify + lint + test
 ```
 
 پس از هر تغییر در `src/content/*`، در `chrome://extensions` دکمه **Reload** را بزنید و صفحه هدف را دوباره بارگذاری کنید.
@@ -166,7 +167,8 @@ src/
   ui/         theme.css dom.js api.js              ← کیت مشترک رابط کاربری
   popup/ options/ panel/  assets/icons/
 tools/        make-icons.mjs verify.mjs
-tests/        nlp engines insertion scenarios security
+eslint.config.mjs
+tests/        nlp(51) engines(22) insertion(21) scenarios(23) security(11)
 docs/         ARCHITECTURE.md SPEECH-ENGINES.md TESTING.md
 ```
 

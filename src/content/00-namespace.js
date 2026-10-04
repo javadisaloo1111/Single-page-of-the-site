@@ -34,8 +34,8 @@
     log(level, message, data) {
       try {
         if (level !== 'debug' || window.__VOICETYPE__.state.conf.debug?.enabled) {
-          // eslint-disable-next-line no-console
-          console[level === 'error' ? 'error' : 'log']('[VoiceType]', message, data ?? '');
+          const sink = level === 'error' ? console.error : console.log;
+          sink('[VoiceType]', message, data ?? '');
         }
       } catch { /* noop */ }
     }

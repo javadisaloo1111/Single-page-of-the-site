@@ -7,14 +7,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { normalizePersian, fixHalfSpace, normalizeSpacing, toPersianDigits, toEnglishDigits, joinChunks, scriptDominant } from '../src/nlp/persian.js';
-import { numbersToDigits, formatDigits, isNumberWord } from '../src/nlp/numbers.js';
+import { numbersToDigits, isNumberWord } from '../src/nlp/numbers.js';
 import { applyCodeSwitch, buildTermIndex, applyCustomRules, looksUnsafeRegex } from '../src/nlp/codeSwitch.js';
 import { detectLanguage, detectSegments, shouldSwitchLanguage } from '../src/nlp/languageDetect.js';
 import { smartPunctuate, cleanupPunctuation } from '../src/nlp/punctuation.js';
 import { parseVoiceCommands, buildCommandIndex } from '../src/nlp/commands.js';
 import { Reconciler, normalizeForCompare, stripLeadingWords } from '../src/nlp/dedupe.js';
 import { TextPipeline } from '../src/nlp/pipeline.js';
-import { detectLanguage as detect } from '../src/nlp/languageDetect.js';
 import { DEFAULT_SETTINGS, sanitizeSettings } from '../src/common/settings.js';
 
 const pipelineFor = (overrides = {}) => {
@@ -317,6 +316,18 @@ test('compound words keep their punctuation (Next.js stays Next.js)', () => {
   const index = buildTermIndex([]);
   assert.equal(applyCodeSwitch('پروژه Next.js من', { index }).text, 'پروژه Next.js من');
   assert.equal(applyCodeSwitch('با node.js کار می‌کنم', { index }).text, 'با node.js کار می‌کنم');
+  // `go` and `api` are known terms; as compound members they must stay untouched
+  assert.equal(applyCodeSwitch('فایل go.mod را باز کن', { index }).text, 'فایل go.mod را باز کن');
+  assert.equal(applyCodeSwitch('به api.example.com وصل شو', { index }).text, 'به api.example.com وصل شو');
+  assert.equal(applyCodeSwitch('فایل user-id.txt را بخوان', { index }).text, 'فایل user-id.txt را بخوان');
+});
+
+test('compound members are not rewritten even when the member is a user term', () => {
+  const index = buildTermIndex([{ term: 'API', kind: 'proper', fa: [], en: ['api'] }]);
+  // standalone "api" is canonicalised …
+  assert.equal(applyCodeSwitch('api را صدا بزن', { index }).text, 'API را صدا بزن');
+  // … but inside a hostname it must not be
+  assert.equal(applyCodeSwitch('به api.service.ir وصل شو', { index }).text, 'به api.service.ir وصل شو');
 });
 
 test('interim results only expose the uncommitted tail', () => {

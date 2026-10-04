@@ -27,6 +27,7 @@ export function normalizeForMatch(text) {
     .replace(/[\u0623\u0625\u0622]/g, 'ا') // أ إ آ -> ا
     .replace(/[\u0629]/g, 'ه')            // ة -> ه
     .replace(/[\u0640]/g, '')             // tatweel
+    /* eslint-disable-next-line no-misleading-character-class -- ZWNJ/ZWJ/LRM/RLM are exactly what we strip */
     .replace(/[\u200C\u200D\u200E\u200F]/g, '')
     .replace(/\s+/g, ' ')
     .trim();

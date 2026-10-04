@@ -4,7 +4,7 @@
  * shortcuts, history, privacy, debug, about.
  */
 import { api, subscribe } from '../ui/api.js';
-import { $, el, clear, toast, copyToClipboard, debounce, formatDate, formatTime, formatDuration, STATE_LABEL_FA } from '../ui/dom.js';
+import { $, el, clear, toast, copyToClipboard, debounce, formatDate, formatTime, STATE_LABEL_FA } from '../ui/dom.js';
 import { LANGUAGES, ENGINES, DICTIONARY_LIMIT_MAX, HISTORY_LIMIT_MAX } from '../common/constants.js';
 
 const nav = $('#nav');
@@ -315,7 +315,20 @@ const CUSTOM = {
     wrap.appendChild(el('p', { class: 'hint', text: 'موتور فعال را انتخاب کنید. موتورهای غیرفعال با دلیل مشخص می‌شوند و در آینده بدون تغییر معماری افزوده می‌شوند.' }));
     grid.className = 'vt-grid';
     wrap.appendChild(grid);
-    for (const entry of (diagnostics?.offscreen?.engineCatalog || diagnostics?.engineCatalog || [])) {
+    const entries = diagnostics?.offscreen?.engineCatalog || diagnostics?.engineCatalog || [];
+    if (!entries.length) {
+      grid.appendChild(el('div', { class: 'hint', text: 'در حال بررسی موتورها…' }));
+      api.engineCatalog().then((res) => {
+        if (res.ok && res.catalog?.length) {
+          diagnostics = { ...(diagnostics || {}), offscreen: { ...(diagnostics?.offscreen || {}), engineCatalog: res.catalog } };
+          render();
+        } else {
+          clear(grid);
+          grid.appendChild(el('div', { class: 'hint', text: 'وضعیت موتورها در دسترس نیست. صفحه را دوباره باز کنید.' }));
+        }
+      });
+    }
+    for (const entry of entries) {
       const card = el('div', { class: `engine-card${settings.recognition.engine === entry.id ? ' selected' : ''}` });
       card.appendChild(el('h3', { text: entry.label }));
       card.appendChild(el('div', { class: `badge ${entry.available ? 'good' : entry.reason === 'not-implemented' ? 'muted' : 'warn'}`, text: entry.available ? 'در دسترس' : `غیرفعال (${entry.reason})` }));

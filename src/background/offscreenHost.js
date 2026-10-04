@@ -91,6 +91,8 @@ export const OFFSCREEN_MESSAGES = Object.freeze({
   micQuery: () => requestOffscreen(MSG.OFF_MIC_QUERY, {}),
   micTest: (durationMs) => requestOffscreen(MSG.OFF_MIC_TEST, { durationMs }),
   onDevice: (langs) => requestOffscreen(MSG.OFF_ON_DEVICE_CHECK, { langs }, { create: false }),
-  diagnostics: () => requestOffscreen(MSG.OFF_DIAGNOSTICS, {}, { create: false, retry: false }),
+  diagnostics: () => requestOffscreen(MSG.OFF_DIAGNOSTICS, {}, { create: true, retry: false }),
+  catalog: () => requestOffscreen(MSG.OFF_DIAGNOSTICS, {}, { create: true, retry: true }),
+  whisperProbe: () => requestOffscreen(MSG.OFF_WHISPER_TEST, {}, { create: true, retry: false }),
   ping: () => requestOffscreen(MSG.OFF_PING, {}, { create: false, retry: false })
 });

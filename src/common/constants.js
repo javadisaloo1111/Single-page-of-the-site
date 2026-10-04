@@ -28,6 +28,7 @@ export const MSG = Object.freeze({
   MIC_REQUEST: 'mic-request',
   MIC_TEST: 'mic-test',
   DIAGNOSTICS: 'diagnostics',
+  ENGINE_CATALOG: 'engine-catalog',
   WHISPER_TEST: 'whisper-test',
   ON_DEVICE_CHECK: 'on-device-check',
   OPEN_OPTIONS: 'open-options',

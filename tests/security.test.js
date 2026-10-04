@@ -33,7 +33,7 @@ test('proto-pollution keys never survive sanitisation or merging', () => {
   const merged = sanitizeSettings(clean.settings);
   assert.equal({}.polluted, undefined);
   assert.equal(merged.text.normalize, false);
-  const merged2 = deepMerge(DEFAULT_SETTINGS, { __proto__: { hacked: true }, constructor: { x: 1 } });
+  deepMerge(DEFAULT_SETTINGS, { __proto__: { hacked: true }, constructor: { x: 1 } });
   assert.equal({}.hacked, undefined);
 });
 
@@ -117,7 +117,6 @@ test('content script namespace flags injection without exposing internals', () =
   // The namespace guard is what makes double injection safe; simulate the two-injection case.
   const scope = {};
   const source = 'if (window.__VOICETYPE__ && window.__VOICETYPE__.version) { window.__INJECTIONS__ = (window.__INJECTIONS__ || 0) + 1; }';
-  // eslint-disable-next-line no-new-func
   const run = new Function('window', `window.__VOICETYPE__ = ${JSON.stringify(scope)}; ${source}`);
   run({});
   assert.ok(true);

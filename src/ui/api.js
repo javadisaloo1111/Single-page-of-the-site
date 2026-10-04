@@ -34,6 +34,7 @@ export const api = {
   logs: () => send(MSG.GET_LOGS),
   clearLogs: () => send(MSG.CLEAR_LOGS),
   diagnostics: () => send(MSG.DIAGNOSTICS),
+  engineCatalog: () => send(MSG.ENGINE_CATALOG),
 
   micQuery: () => send(MSG.MIC_QUERY),
   micRequest: () => send(MSG.MIC_REQUEST),

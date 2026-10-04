@@ -107,7 +107,7 @@ function renderIcon(size) {
       let r = Math.round(58 + 40 * t);
       let g = Math.round(96 - 10 * t);
       let b = Math.round(226 + 20 * t);
-      let a = bgA;
+      const a = bgA;
 
       const solid = clamp01(Math.max(white, holder));
       if (solid > 0) {

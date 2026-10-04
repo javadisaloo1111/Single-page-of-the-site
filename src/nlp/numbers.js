@@ -102,7 +102,6 @@ export function numbersToDigits(text, options = {}) {
     let sawAnyNumber = false;
     let sawScale = false;
     let scaleCount = 0;
-    let hadDigits = false;
     let lastScaleValue = 0;
     const consumed = [];
 
@@ -116,7 +115,7 @@ export function numbersToDigits(text, options = {}) {
         const v = Number(digitValue(t.value));
         if (Number.isFinite(v)) {
           current = current === 0 ? v : current + v; // "دو 3" -> 5 (rare, safe)
-          hadDigits = true; sawAnyNumber = true; consumed.push(j); j += 1; continue;
+          sawAnyNumber = true; consumed.push(j); j += 1; continue;
         }
         break;
       }

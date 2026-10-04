@@ -135,7 +135,11 @@ export function applyCodeSwitch(text, options = {}) {
     if (tok.type !== TOKEN.WORD) { out.push(tok.value); i += 1; continue; }
 
     if (tok.script === 'latin') {
-      const fixed = fixLatinToken(tok.value, index, { englishizeGenericTerms });
+      // A token glued to `.`/`/`/`-`/`@` belongs to a compound (`Next.js`, `node.js`,
+      // `user-id`, `name@host`): rewriting a member on its own would corrupt the compound.
+      const fixed = isInsideCompound(tokens, i)
+        ? null
+        : fixLatinToken(tok.value, index, { englishizeGenericTerms });
       if (fixed && fixed !== tok.value) {
         replacements.push({ from: tok.value, to: fixed, kind: 'casing' });
         out.push(fixed);

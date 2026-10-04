@@ -82,12 +82,12 @@ function handleState(message) {
 }
 
 function handleConf(message) {
-  if (message.conf) {
-    VT_CONF = message.conf;
-    dom.target.placeholder = 'این کادر هدف واژه‌نگاری است. روی آن کلیک کنید و صحبت کنید…';
-  }
+  if (!message.conf) return;
+  // mirror the on-page UI configuration (interim preview can be switched off)
+  panelConf = message.conf;
+  dom.target.placeholder = 'این کادر هدف واژه‌نگاری است. روی آن کلیک کنید و صحبت کنید…';
 }
-let VT_CONF = null;
+let panelConf = null;
 
 function handleExec(message) {
   if (message.op === 'copyText') {
@@ -173,7 +173,7 @@ function renderState() {
 
 function renderInterim() {
   clear(dom.interim);
-  if (!interimText) {
+  if (!interimText || panelConf?.showInterim === false) {
     dom.interim.appendChild(el('span', { class: 'hint', text: '—' }));
     return;
   }
@@ -270,9 +270,7 @@ $('#toggle-debug').addEventListener('click', () => dom.debugHost.classList.toggl
 dom.target.addEventListener('focus', () => announceTarget());
 dom.target.addEventListener('click', () => announceTarget());
 
-let announced = false;
 async function announceTarget() {
-  announced = true;
   await chrome.runtime.sendMessage({
     type: MSG.CS_READY,
     hasEditable: true,

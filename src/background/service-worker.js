@@ -20,6 +20,13 @@ import {
 
 const OFFSCREEN_IDLE_CLOSE_MS = 2000;
 
+/** Offscreen-only message types (see the guard in the router below). */
+const SW_IGNORED_TYPES = new Set([
+  MSG.OFF_START, MSG.OFF_STOP, MSG.OFF_ABORT, MSG.OFF_SETTINGS, MSG.OFF_PING,
+  MSG.OFF_MIC_TEST, MSG.OFF_MIC_QUERY, MSG.OFF_WHISPER_TEST, MSG.OFF_ON_DEVICE_CHECK,
+  MSG.OFF_DIAGNOSTICS
+]);
+
 /** Live state. */
 const state = {
   session: {
@@ -463,8 +470,6 @@ async function insertLastTranscript() {
   return res;
 }
 
-const MENU_IDS = ['vt-start-stop', 'vt-insert-last', 'vt-options'];
-
 chrome.runtime.onInstalled.addListener(async (details) => {
   state.settings = await loadSettings();
   try {
@@ -558,6 +563,11 @@ chrome.runtime.onMessage.addListener((rawMessage, sender, sendResponse) => {
   const message = sanitizeIncoming(rawMessage);
   if (!message) return false;
 
+  // Messages addressed *to the offscreen document* must not be answered here: `sendMessage`
+  // resolves with the first responder, so an "unhandled" reply from this listener could
+  // preempt the real answer. Only the offscreen document owns these types.
+  if (SW_IGNORED_TYPES.has(message.type)) return false;
+
   (async () => {
     switch (message.type) {
       /* ---------- state & settings ---------- */
@@ -650,6 +660,12 @@ chrome.runtime.onMessage.addListener((rawMessage, sender, sendResponse) => {
         await clearLogs();
         sendResponse({ ok: true });
         return;
+      case MSG.ENGINE_CATALOG: {
+        const diag = await OFFSCREEN_MESSAGES.catalog();
+        if (!state.session.active) scheduleOffscreenClose();
+        sendResponse({ ok: true, catalog: diag?.engineCatalog || [] });
+        return;
+      }
       case MSG.DIAGNOSTICS: {
         const diag = await OFFSCREEN_MESSAGES.diagnostics();
         sendResponse({
@@ -668,6 +684,7 @@ chrome.runtime.onMessage.addListener((rawMessage, sender, sendResponse) => {
             }
           }
         });
+        if (!state.session.active) scheduleOffscreenClose();
         return;
       }
 
@@ -695,8 +712,9 @@ chrome.runtime.onMessage.addListener((rawMessage, sender, sendResponse) => {
         if (!state.session.active) scheduleOffscreenClose();
         return;
       case MSG.WHISPER_TEST: {
-        await ensureOffscreen();
-        sendResponse(await OFFSCREEN_MESSAGES.ping());
+        const probe = await OFFSCREEN_MESSAGES.whisperProbe();
+        if (!state.session.active) scheduleOffscreenClose();
+        sendResponse({ ok: true, ...probe });
         return;
       }
 

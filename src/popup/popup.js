@@ -1,6 +1,6 @@
 /** Popup: at-a-glance status, one-click control, quick toggles. */
 import { api, subscribe } from '../ui/api.js';
-import { $, el, clear, toast, copyToClipboard, STATE_LABEL_FA, formatDuration } from '../ui/dom.js';
+import { $, el, clear, toast, STATE_LABEL_FA, formatDuration } from '../ui/dom.js';
 import { LANGUAGES } from '../common/constants.js';
 
 const dom = {
@@ -155,7 +155,7 @@ async function refresh() {
     const toggle = shortcuts.find((s) => s.name === 'toggle-dictation');
     dom.shortcutHint.textContent = toggle && toggle.shortcut
       ? `میانبر شروع/توقف: ${toggle.shortcut.replace('MacCtrl', 'Ctrl')}`
-      : 'میانبری ثبت نشده — از dکمه «تغییر میانبر» استفاده کنید.';
+      : 'میانبری ثبت نشده — از دکمه «تغییر میانبر» استفاده کنید.';
     dom.historyCount.textContent = String((res.state.stats && res.state.stats.finals) || 0);
     dom.langSelect.value = settings.language.mode === 'manual' ? settings.language.manualLang : 'auto';
   } else {

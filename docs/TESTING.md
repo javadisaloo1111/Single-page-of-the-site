@@ -12,17 +12,18 @@
 ## 1. اجرای تست‌های خودکار
 
 ```bash
-npm install     # فقط jsdom (تست DOM)
+npm install     # jsdom (تست DOM) + ESLint
 npm run verify  # بررسی ایستا: manifest, CSP, ترتیب content scripts, ایمپورت‌ها, eval/remote-code
-npm test        # 127 تست
-npm run check   # هر دو
+npm run lint    # ESLint با no-undef (گرفتن خطای نام متغیر/ایمپورت)
+npm test        # 128 تست
+npm run check   # هر سه
 ```
 
 نتیجه اجرای فعلی:
 
 ```
-# tests 127
-# pass 127
+# tests 128
+# pass 128
 # fail 0
 
 VoiceType Pro — static verification
@@ -41,7 +42,7 @@ PASSED — 0 warning(s)
 
 | فایل | تعداد | چه چیزی را تضمین می‌کند |
 |---|---|---|
-| `tests/nlp.test.js` | 50 | کدسوییچینگ (ری‌اکت→React)، نیم‌فاصله، اعداد، تشخیص زبان، دستورها، علائم، dedupe، sanitize، امنیت regex |
+| `tests/nlp.test.js` | 51 | کدسوییچینگ (ری‌اکت→React)، نیم‌فاصله، اعداد، تشخیص زبان، دستورها، علائم، dedupe، sanitize، امنیت regex |
 | `tests/engines.test.js` | 22 | آماره‌های اسکریپت، داوری دو موتوره، نگاشت خطا، کنترلر: شروع/توقف، میکروفون رد‌شده، ری‌استارت، سوییچ زبان |
 | `tests/insertion.test.js` | 21 | درج در input/textarea/contenteditable، React-controlled، حفظ نشانگر، journal (پاک کن/همه رو پاک کن)، عدم XSS |
 | `tests/scenarios.test.js` | 23 | زنجیره کامل موتور→کنترلر→پایپ‌لاین→DOM مطابق ۲۰ سناریوی پذیرش |

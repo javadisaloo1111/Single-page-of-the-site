@@ -19,7 +19,6 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const FILES = ['00-namespace.js', '10-bridge.js', '20-tracker.js', '30-inserter.js', '40-hotkeys.js'];
 
-let dom;
 let window;
 let VT;
 
@@ -47,7 +46,6 @@ function makeDom({ execCommand = true } = {}) {
 
 before(() => {
   const made = makeDom();
-  dom = made.instance;
   window = made.win;
   VT = made.VT;
   VT.tracker.start(); // normally called by 99-main.js

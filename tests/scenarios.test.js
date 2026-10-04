@@ -354,7 +354,7 @@ test('scenario 19 — the custom dictionary shapes the output', async () => {
     }
   });
   await controller.startSession({ tabId: 1, lang: 'fa-IR' });
-  const field = await makeField(page, 'textarea');
+  await makeField(page, 'textarea');
   controller.handleEngineEvent({ type: 'final', transcript: 'مشکل اتنتیکیشن حل شد', lang: 'fa-IR' });
   await new Promise((r) => setTimeout(r, 5));
   controller.handleEngineEvent({ type: 'final', transcript: 'مشکل authentication حل شد', lang: 'fa-IR' });

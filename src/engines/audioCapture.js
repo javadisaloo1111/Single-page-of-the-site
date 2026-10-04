@@ -193,8 +193,8 @@ export async function testMicrophone(durationMs = 1600, { onLevel } = {}) {
   capture.onLevel = (level) => { peak = Math.max(peak, level); if (onLevel) onLevel(level); };
   try {
     await capture.open();
+    // sequential sampling on purpose: one level reading per tick
     while (Date.now() - started < durationMs) {
-      // eslint-disable-next-line no-await-in-loop
       await new Promise((r) => setTimeout(r, 100));
     }
     return { ok: true, level: peak, state: MIC_STATE.GRANTED };
