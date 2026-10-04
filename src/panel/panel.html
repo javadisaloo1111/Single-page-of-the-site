@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>کنسول صوتی — VoiceType Pro</title>
+  <link rel="stylesheet" href="../ui/theme.css">
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body class="panel">
+  <header class="panel-head">
+    <div class="vt-row">
+      <img src="../assets/icons/icon48.png" alt="" width="34" height="34">
+      <div>
+        <h1>کنسول صوتی VoiceType Pro</h1>
+        <div class="hint">محیط تمرین و واژه‌نگاری طولانی — بدون نیاز به فیلد متنی سایت‌ها. متن مستقیماً در همین کادر نوشته می‌شود.</div>
+      </div>
+      <div class="vt-spacer"></div>
+      <span class="pill" id="state-pill"><span class="dot idle"></span><span id="state-label">آماده</span></span>
+    </div>
+  </header>
+
+  <main class="panel-body">
+    <div id="alerts" class="vt-col"></div>
+
+    <div class="grid-main">
+      <section class="card">
+        <div class="vt-row wrap">
+          <button class="primary" id="toggle">شروع واژه‌نگاری</button>
+          <button id="cancel">لغو</button>
+          <button class="ghost" id="clear">پاک کردن کادر</button>
+          <button class="ghost" id="copy">کپی متن</button>
+          <span class="vt-spacer"></span>
+          <span class="badge" id="lang-badge">Auto</span>
+          <span class="badge muted" id="engine-badge">—</span>
+        </div>
+        <div class="meter" style="margin:10px 0"><i id="level"></i></div>
+        <label class="field">
+          <span>متن خروجی (در همین کادر درج می‌شود — قابل ویرایش)</span>
+          <textarea id="target" dir="auto" spellcheck="false" placeholder="این کادر هدف واژه‌نگاری است. روی آن کلیک کنید و صحبت کنید…"></textarea>
+        </label>
+        <div class="interim-box">
+          <span class="hint">متن موقت:</span>
+          <div class="transcript" id="interim"><span class="hint">—</span></div>
+        </div>
+      </section>
+
+      <aside class="card side">
+        <h2>وضعیت جلسه</h2>
+        <dl class="kv" id="session-kv"></dl>
+        <h2 style="margin-top:14px">زبان‌های تشخیص‌داده‌شده</h2>
+        <div class="tag-row" id="detected-tags"><span class="hint">در انتظار گفتار…</span></div>
+        <h2 style="margin-top:14px">دستورهای صوتی (پالت دستی)</h2>
+        <div class="tag-row" id="command-palette"></div>
+      </aside>
+    </div>
+
+    <section class="card">
+      <h2>بخش‌های تبدیل‌شده</h2>
+      <div class="list scroll" id="segments"><p class="hint">هنوز بخشی ثبت نشده است.</p></div>
+    </section>
+
+    <section class="card">
+      <h2>جریان دیباگ <button class="small ghost" id="toggle-debug">نمایش/پنهان</button></h2>
+      <div id="debug-host" class="scroll hidden"></div>
+    </section>
+  </main>
+
+  <div id="vt-toasts" class="vt-toasts"></div>
+  <script type="module" src="panel.js"></script>
+</body>
+</html>

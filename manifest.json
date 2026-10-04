@@ -1,0 +1,90 @@
+{
+  "manifest_version": 3,
+  "name": "VoiceType Pro — Multilingual Speech to Text",
+  "short_name": "VoiceType Pro",
+  "version": "1.0.0",
+  "description": "تبدیل گفتار به متن با تشخیص خودکار زبان و پشتیبانی از گفتار مخلوط فارسی/انگلیسی/عربی در هر فیلد متنی مرورگر.",
+  "minimum_chrome_version": "116",
+  "icons": {
+    "16": "src/assets/icons/icon16.png",
+    "32": "src/assets/icons/icon32.png",
+    "48": "src/assets/icons/icon48.png",
+    "128": "src/assets/icons/icon128.png"
+  },
+  "action": {
+    "default_title": "VoiceType Pro",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "src/assets/icons/icon16.png",
+      "32": "src/assets/icons/icon32.png",
+      "48": "src/assets/icons/icon48.png",
+      "128": "src/assets/icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "offscreen",
+    "scripting",
+    "contextMenus",
+    "alarms"
+  ],
+  "optional_permissions": [],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "all_frames": true,
+      "match_about_blank": true,
+      "run_at": "document_idle",
+      "js": [
+        "src/content/00-namespace.js",
+        "src/content/10-bridge.js",
+        "src/content/20-tracker.js",
+        "src/content/30-inserter.js",
+        "src/content/40-hotkeys.js",
+        "src/content/50-floating.js",
+        "src/content/99-main.js"
+      ],
+      "css": ["src/content/content.css"]
+    }
+  ],
+  "commands": {
+    "toggle-dictation": {
+      "suggested_key": { "default": "Ctrl+Shift+Space", "mac": "Command+Shift+Space" },
+      "description": "شروع / توقف واژه‌نگاری صوتی"
+    },
+    "cancel-dictation": {
+      "suggested_key": { "default": "Ctrl+Shift+X", "mac": "Command+Shift+X" },
+      "description": "لغو آخرین جلسه واژه‌نگاری"
+    },
+    "insert-last-transcript": {
+      "suggested_key": { "default": "Ctrl+Shift+Y", "mac": "Command+Shift+Y" },
+      "description": "درج آخرین متن تبدیل‌شده در محل نشانگر"
+    },
+    "toggle-floating-ui": {
+      "suggested_key": { "default": "Ctrl+Shift+L", "mac": "Command+Shift+L" },
+      "description": "نمایش / پنهان‌کردن نشانگر شناور"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["src/assets/icons/*", "src/content/content.css"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; style-src 'self'; img-src 'self' data:; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; form-action 'none'; base-uri 'none'"
+  },
+  "offline_enabled": false
+}

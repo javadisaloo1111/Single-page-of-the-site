@@ -1,0 +1,12 @@
+node_modules
+package-lock.json
+*.zip
+*.crx
+*.pem
+.DS_Store
+.vscode/
+.idea/
+tmp/
+dist/
+coverage/
+*.log
