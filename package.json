@@ -1,0 +1,11 @@
+{
+  "name": "vocabulary-voice-typing-extension",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check-extension.mjs",
+    "package": "npm run check && npm test && python3 scripts/package-extension.py"
+  }
+}

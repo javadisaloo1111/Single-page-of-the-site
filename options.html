@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>تنظیمات VocaType</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark">V</div>
+    <div class="brand"><strong>VocaType</strong><span>تنظیمات تایپ صوتی</span></div>
+    <div class="top-status"><span class="live-dot"></span><span id="topStatus">آماده</span></div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" aria-label="بخش‌های تنظیمات">
+      <a href="#general" class="nav-link active">◈ <span>عمومی</span></a>
+      <a href="#engine" class="nav-link">◉ <span>موتور گفتار</span></a>
+      <a href="#text" class="nav-link">✎ <span>متن و اعداد</span></a>
+      <a href="#dictionary" class="nav-link">Aa <span>واژگان فنی</span></a>
+      <a href="#commands" class="nav-link">⌘ <span>فرمان صوتی</span></a>
+      <a href="#history" class="nav-link">▤ <span>تاریخچه</span></a>
+      <a href="#privacy" class="nav-link">◈ <span>حریم خصوصی</span></a>
+      <a href="#debug" class="nav-link">⚙ <span>توسعه‌دهنده</span></a>
+    </aside>
+
+    <main class="content">
+      <section id="general" class="settings-section">
+        <div class="section-header"><div><p class="eyebrow">PREFERENCES</p><h1>تنظیمات عمومی</h1><p>زبان و رفتار پایهٔ دیکته را انتخاب کنید.</p></div><div class="header-badge">نسخهٔ ۱.۰</div></div>
+        <div class="card form-grid">
+          <label class="field"><span>زبان گفتار</span><select id="language"><option value="auto">تشخیص خودکار · فارسی / English / العربية</option><option value="fa">فارسی</option><option value="en">English</option><option value="ar">العربية</option></select><small>برای تشخیص واقعی جابه‌جایی زبان، موتور ابری چندزبانه لازم است.</small></label>
+          <label class="field"><span>موتور تشخیص</span><select id="engine"><option value="auto">خودکار · سرویس ابری، سپس fallback مرورگر</option><option value="soniox">Soniox real-time (پیشنهادی برای Mixed Language)</option><option value="webspeech">Web Speech API مرورگر</option></select><small id="engineHint">اگر Token Broker تنظیم نشده باشد، حالت خودکار از موتور مرورگر استفاده می‌کند.</small></label>
+          <div class="field"><span>میانبر شروع / توقف</span><button class="secondary-button" id="shortcutBtn">مشاهده و تغییر میانبر</button><small id="shortcutValue">Ctrl+Shift+2</small></div>
+          <div class="field"><span>Float Indicator داخل صفحه</span><label class="toggle-row"><span>نمایش نشانگر هنگام ضبط</span><input id="showFloating" type="checkbox"><i></i></label><small>نشانگر را می‌توان کشید، کوچک یا مخفی کرد.</small></div>
+        </div>
+      </section>
+
+      <section id="engine" class="settings-section">
+        <div class="section-header"><div><p class="eyebrow">RECOGNITION</p><h2>موتور و اتصال</h2><p>حالت ابری چندزبانه یا موتور داخلی مرورگر.</p></div></div>
+        <div class="card">
+          <div class="privacy-banner"><span>✦</span><div><strong>حالت پیشنهادی برای فارسی + English</strong><p>Soniox متن را به شکل real-time می‌فرستد و برای Code-switching طراحی شده است. در این حالت جریان صدا برای پردازش به سرویس ابری ارسال می‌شود.</p></div></div>
+          <div class="form-grid two-col broker-fields">
+            <label class="field span-2"><span>نشانی Token Broker</span><input id="tokenBrokerUrl" type="url" placeholder="https://your-domain.example/v1/session-token" autocomplete="url"><small>برای اجرای محلی: http://localhost:8787/v1/session-token</small></label>
+            <label class="field span-2"><span>Access Token مربوط به Broker</span><input id="brokerAccessToken" type="password" placeholder="توکن شخصی Broker" autocomplete="new-password"><small>کلید دائمی Soniox را اینجا وارد نکنید. Broker نمونه در پوشهٔ broker قرار دارد.</small></label>
+            <div class="field span-2 button-row"><button class="primary-small" id="saveBrokerBtn">ذخیره و اجازهٔ اتصال</button><button class="secondary-button" id="testBrokerBtn">آزمون اتصال</button><button class="danger-outline" id="clearBrokerBtn">قطع اتصال و حذف توکن</button><span id="brokerStatus" class="inline-status"></span></div>
+          </div>
+          <div class="check-list compact-list">
+            <label class="toggle-row"><span><strong>نمایش متن موقت</strong><small>پیش‌نمایش interim؛ ممکن است با ادامهٔ گفتار اصلاح شود.</small></span><input id="interimResults" type="checkbox"><i></i></label>
+            <label class="toggle-row"><span><strong>حالت پیوسته</strong><small>پس از هر جمله شنیدن ادامه پیدا کند.</small></span><input id="continuousMode" type="checkbox"><i></i></label>
+            <label class="toggle-row"><span><strong>اتصال مجدد خودکار</strong><small>در قطع موقت سرویس، با backoff محدود دوباره تلاش شود.</small></span><input id="autoRestart" type="checkbox"><i></i></label>
+          </div>
+        </div>
+      </section>
+
+      <section id="text" class="settings-section">
+        <div class="section-header"><div><p class="eyebrow">TEXT PROCESSING</p><h2>پردازش متن</h2><p>اصلاحات محافظه‌کارانه، بدون ترجمه یا آوانویسی واژه‌های انگلیسی.</p></div></div>
+        <div class="card check-list">
+          <label class="toggle-row"><span><strong>Smart Punctuation</strong><small>پایان جمله و پرسش را فقط در صورت نبود علامت اضافه می‌کند.</small></span><input id="smartPunctuation" type="checkbox"><i></i></label>
+          <label class="toggle-row"><span><strong>یکسان‌سازی متن فارسی</strong><small>ی/ک فارسی، فاصله‌ها و علائم نگارشی را مرتب می‌کند.</small></span><input id="normalizeText" type="checkbox"><i></i></label>
+          <label class="toggle-row"><span><strong>نیم‌فاصلهٔ محافظه‌کارانه</strong><small>برای ساختارهای رایج مثل «می‌روم» و جمع «کتاب‌ها».</small></span><input id="persianHalfSpace" type="checkbox"><i></i></label>
+          <label class="toggle-row"><span><strong>حفظ و استانداردسازی اصطلاحات انگلیسی</strong><small>React و Laravel را به فارسی برنمی‌گرداند؛ فقط شکل‌های لاتین شناخته‌شده را canonical می‌کند.</small></span><input id="preserveEnglishWords" type="checkbox"><i></i></label>
+          <label class="field inline-field"><span>نوع رقم خروجی</span><select id="digitStyle"><option value="fa">فارسی: ۱۲۳</option><option value="en">انگلیسی: 123</option></select></label>
+          <div class="soft-note">تبدیل واژه‌های عددی فارسی در عبارت‌های شناخته‌شده انجام می‌شود؛ موارد مبهم برای جلوگیری از تغییر معنی دست‌نخورده می‌مانند.</div>
+        </div>
+      </section>
+
+      <section id="dictionary" class="settings-section">
+        <div class="section-header"><div><p class="eyebrow">VOCABULARY</p><h2>واژگان فنی و شخصی</h2><p>واژه‌های سفارشی هنگام استفاده از Soniox به‌عنوان context برای سرویس فرستاده می‌شوند؛ در دستگاه فقط برای استانداردسازی transcript به‌کار می‌روند.</p></div></div>
+        <div class="card">
+          <div id="builtinTerms" class="term-cloud"></div>
+          <div class="divider"></div>
+          <h3>واژگان سفارشی</h3>
+          <p class="muted">مثال: <span dir="ltr">reactjs → React.js</span>. این تبدیل فقط روی عبارت کامل انجام می‌شود.</p>
+          <div class="vocab-form"><label class="field"><span>واژهٔ گفته‌شده / موجود</span><input id="vocabWord" placeholder="مثلاً reactjs" maxlength="80"></label><label class="field"><span>جایگزین</span><input id="vocabReplacement" placeholder="مثلاً React.js" maxlength="80"></label><button class="primary-small" id="addVocabBtn">افزودن</button></div>
+          <div id="customVocabularyList" class="custom-list"></div>
+        </div>
+      </section>
+
+      <section id="commands" class="settings-section">
+        <div class="section-header"><div><p class="eyebrow">VOICE COMMANDS</p><h2>فرمان‌های صوتی</h2><p>فرمان تنها وقتی اجرا می‌شود که همان عبارت، کل بخش نهایی گفتار باشد.</p></div></div>
+        <div class="card">
+          <label class="toggle-row command-toggle"><span><strong>فعال‌بودن فرمان‌ها</strong><small>فرمان‌های زیر را با مکث کوتاه و به‌صورت مستقل بگویید.</small></span><input id="voiceCommands" type="checkbox"><i></i></label>
+          <div class="command-grid">
+            <span>«خط جدید»<b>↵</b></span><span>«پاراگراف جدید»<b>↵ ↵</b></span><span>«پاک کن»<b>حذف بخش آخر</b></span><span>«همه رو پاک کن»<b>حذف دیکتهٔ نشست</b></span><span>«نقطه»<b>.</b></span><span>«ویرگول»<b>،</b></span><span>«علامت سوال»<b>؟</b></span><span>«دو نقطه»<b>:</b></span><span>«برگرد»<b>Undo</b></span><span>«دوباره انجام بده»<b>Redo</b></span><span>«کپی / بچسبون»<b>مجوز Clipboard لازم</b></span>
+          </div>
+          <div class="soft-note">اگر جملهٔ معمولی فقط شامل بخشی از واژهٔ فرمان باشد، فرمان اجرا نمی‌شود. پاک‌کردن فقط وقتی فیلد تغییر نکرده باشد برمی‌گردد تا متن کاربر حذف نشود.</div>
+        </div>
+      </section>
+
+      <section id="history" class="settings-section">
+        <div class="section-header"><div><p class="eyebrow">LOCAL HISTORY</p><h2>تاریخچه</h2><p>ذخیرهٔ متن فقط روی دستگاه و فقط با فعال‌کردن شما.</p></div><button class="danger-outline" id="clearHistoryBtn">پاک‌کردن همه</button></div>
+        <div class="card">
+          <label class="toggle-row"><span><strong>فعال‌کردن تاریخچه</strong><small>اگر خاموش شود، تاریخچهٔ قبلی نیز پاک می‌شود.</small></span><input id="historyEnabled" type="checkbox"><i></i></label>
+          <label class="field inline-field"><span>حداکثر مورد</span><select id="historyLimit"><option value="10">۱۰</option><option value="25">۲۵</option><option value="50">۵۰</option><option value="100">۱۰۰</option><option value="200">۲۰۰</option></select></label>
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </section>
+
+      <section id="privacy" class="settings-section">
+        <div class="section-header"><div><p class="eyebrow">PRIVACY & PERMISSIONS</p><h2>حریم خصوصی</h2><p>رفتار واقعی ذخیره‌سازی و انتقال داده.</p></div></div>
+        <div class="card privacy-grid">
+          <div class="privacy-item"><span class="privacy-icon">🎙</span><div><strong>صوت خام</strong><p>در حافظهٔ موقت پردازش می‌شود؛ Extension آن را روی دیسک ذخیره نمی‌کند.</p></div></div>
+          <div class="privacy-item"><span class="privacy-icon">☁</span><div><strong>ارسال به سرور</strong><p>Soniox: صدا حین Listening از طریق WebSocket به سرویس ابری فرستاده می‌شود. Web Speech: وابسته به Chrome و زبان است؛ محلی‌بودن تضمین نیست.</p></div></div>
+          <div class="privacy-item"><span class="privacy-icon">▤</span><div><strong>متن و تاریخچه</strong><p>آخرین متن فقط در نشست مرورگر نگهداری می‌شود؛ تاریخچه به‌صورت پیش‌فرض خاموش و در صورت فعال‌شدن محدود است.</p></div></div>
+          <div class="privacy-item"><span class="privacy-icon">⌁</span><div><strong>کلیدها و مجوزها</strong><p>کلید دائمی STT فقط در Broker می‌ماند. Access Token Broker در storage محلی Chrome است؛ آن را با کسی به اشتراک نگذارید.</p></div></div>
+          <div class="button-row"><button class="secondary-button" id="clipboardReadBtn">اجازهٔ Paste صوتی</button><button class="secondary-button" id="clipboardWriteBtn">اجازهٔ Copy صوتی</button><span id="permissionStatus" class="inline-status"></span></div>
+        </div>
+      </section>
+
+      <section id="debug" class="settings-section">
+        <div class="section-header"><div><p class="eyebrow">DEVELOPER</p><h2>حالت توسعه‌دهنده</h2><p>رویدادهای موتور و درج متن فقط تا پایان نشست مرورگر ثبت می‌شوند.</p></div></div>
+        <div class="card">
+          <label class="toggle-row"><span><strong>Debug Mode</strong><small>ممکن است متن موقت و نهایی را در حافظهٔ نشست نشان دهد؛ برای گفتار خصوصی خاموش نگه دارید.</small></span><input id="debugMode" type="checkbox"><i></i></label>
+          <div class="debug-actions"><button class="secondary-button" id="refreshDebugBtn">به‌روزرسانی گزارش</button><button class="danger-outline" id="clearDebugBtn">پاک‌کردن گزارش</button></div>
+          <pre id="debugLog" class="debug-log">حالت توسعه‌دهنده خاموش است.</pre>
+        </div>
+      </section>
+
+      <div class="footer-actions"><span id="saveMessage" role="status">تغییرات هنوز ذخیره نشده‌اند</span><button class="secondary-button" id="resetBtn">بازنشانی</button><button class="primary-button" id="saveBtn">ذخیرهٔ تنظیمات</button></div>
+    </main>
+  </div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

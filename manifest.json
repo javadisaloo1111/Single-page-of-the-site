@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "name": "VocaType — تایپ صوتی",
+  "version": "1.0.0",
+  "description": "تایپ صوتی چندزبانه با حفظ فارسی و واژه‌های انگلیسی، فرمان صوتی و ورود متن در محل مکان‌نما.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "offscreen",
+    "commands"
+  ],
+  "optional_permissions": [
+    "clipboardRead",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://stt-rt.soniox.com/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "VocaType — تایپ صوتی",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "toggle-dictation": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+2",
+        "mac": "Ctrl+Shift+2"
+      },
+      "description": "شروع یا توقف تایپ صوتی",
+      "global": true
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'self'; style-src 'self'; connect-src 'self' https: wss: http://localhost:* http://127.0.0.1:*; img-src 'self' data:;"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VocaType</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="popup-shell">
+    <header class="brand-row">
+      <div class="brand-mark" aria-hidden="true">V</div>
+      <div class="brand-copy"><h1>VocaType</h1><p>تایپ صوتی هوشمند</p></div>
+      <button id="settingsBtn" class="icon-button" title="تنظیمات" aria-label="تنظیمات">⚙</button>
+    </header>
+
+    <section class="status-card" id="statusCard" data-state="ready">
+      <span class="status-dot" aria-hidden="true"></span>
+      <div><strong id="statusLabel">آماده</strong><small id="statusSub">برای شروع آماده‌ام</small></div>
+      <span id="languageBadge" class="language-badge">Auto</span>
+    </section>
+
+    <div id="warning" class="notice hidden" role="status"></div>
+    <div id="error" class="error-box hidden" role="alert"></div>
+
+    <div class="mic-row"><span>میکروفون</span><span id="micStatus" class="mic-value">آمادهٔ بررسی</span></div>
+    <button id="toggleBtn" class="primary-button" type="button"><span aria-hidden="true">🎙</span><span>شروع تایپ صوتی</span></button>
+
+    <section class="transcript-card">
+      <div class="section-heading"><span>آخرین متن</span><button id="copyLastBtn" class="text-button" type="button">کپی</button></div>
+      <p id="lastTranscript" class="last-transcript">هنوز متنی ثبت نشده است.</p>
+      <p id="interimTranscript" class="interim-transcript hidden"></p>
+    </section>
+
+    <section class="quick-row">
+      <button id="historyBtn" class="quick-card" type="button"><span>▤</span><span>تاریخچه</span></button>
+      <button id="shortcutBtn" class="quick-card" type="button"><span>⌨</span><span>میانبر</span></button>
+      <button id="vocabBtn" class="quick-card" type="button"><span>Aa</span><span>واژگان</span></button>
+    </section>
+    <footer class="privacy-note">صدا فقط هنگام ضبط فعال است؛ پردازش ابری در تنظیمات توضیح داده شده.</footer>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
