@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VoiceType Pro</title>
+  <link rel="stylesheet" href="../ui/theme.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body class="popup">
+  <header class="pop-head">
+    <div class="vt-row">
+      <img src="../assets/icons/icon32.png" alt="" width="26" height="26">
+      <div>
+        <h1>VoiceType Pro</h1>
+        <div class="hint" id="version">نسخه —</div>
+      </div>
+      <div class="vt-spacer"></div>
+      <span class="pill" id="state-pill"><span class="dot idle"></span><span id="state-label">آماده</span></span>
+    </div>
+  </header>
+
+  <main class="pop-body">
+    <div id="alerts" class="vt-col"></div>
+
+    <section class="card">
+      <div class="vt-row">
+        <span class="badge muted" id="mic-badge">میکروفون: نامشخص</span>
+        <span class="badge muted" id="engine-badge">موتور: —</span>
+        <span class="badge" id="lang-badge">Auto</span>
+      </div>
+      <div class="meter" style="margin-top:10px"><i id="level"></i></div>
+      <div class="transcript" id="transcript" style="margin-top:10px">
+        <span class="hint">هنوز متنی تبدیل نشده است. با دکمه زیر یا کلید میانبر شروع کنید.</span>
+      </div>
+      <div class="vt-row" style="margin-top:6px">
+        <button class="small ghost" id="copy-last">کپی آخرین متن</button>
+        <button class="small ghost" id="insert-last">درج آخرین متن</button>
+        <span class="vt-spacer"></span>
+        <span class="hint" id="stats"></span>
+      </div>
+    </section>
+
+    <section class="vt-row">
+      <button class="primary" id="toggle" style="flex:1">شروع واژه‌نگاری</button>
+      <button id="cancel" title="لغو جلسه">لغو</button>
+    </section>
+    <div class="hint center" id="shortcut-hint">میانبر: —</div>
+
+    <section class="card">
+      <h2>زبان</h2>
+      <div class="vt-row wrap">
+        <select id="lang-select" style="flex:1"></select>
+        <span class="badge muted" id="detected">تشخیص داده نشده</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="opt-preserve"><span>حفظ کلمات انگلیسی فنی (ری‌اکت → React)</span></label>
+      <label class="switch"><input type="checkbox" id="opt-punctuation"><span>علائم نگارشی هوشمند</span></label>
+      <label class="switch"><input type="checkbox" id="opt-commands"><span>دستورهای صوتی («خط جدید»، «پاک کن»، …)</span></label>
+      <label class="switch"><input type="checkbox" id="opt-floating"><span>نمایشگر شناور در صفحه</span></label>
+    </section>
+
+    <section class="card subtle">
+      <div class="vt-row wrap">
+        <button class="small" id="open-options">تنظیمات کامل</button>
+        <button class="small" id="open-panel">کنسول صوتی</button>
+        <button class="small" id="open-shortcuts">تغییر میانبر</button>
+        <span class="vt-spacer"></span>
+        <button class="small ghost" id="open-history">تاریخچه (<span id="history-count">0</span>)</button>
+      </div>
+    </section>
+
+    <section class="card subtle" id="privacy-card">
+      <h3>حریم خصوصی</h3>
+      <ul class="privacy" id="privacy-list"></ul>
+    </section>
+  </main>
+
+  <div id="vt-toasts" class="vt-toasts"></div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

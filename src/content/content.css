@@ -1,0 +1,28 @@
+/*
+ * The floating indicator lives inside a Shadow DOM, so this stylesheet stays minimal: it only
+ * guarantees that the host element cannot be affected by the page (and vice versa), and that
+ * reduced-motion / print users are respected. All real styling is inside the shadow root.
+ */
+#voicetype-root {
+  all: initial;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  overflow: visible;
+  z-index: 2147483646;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #voicetype-root * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media print {
+  #voicetype-root {
+    display: none !important;
+  }
+}

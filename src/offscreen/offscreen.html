@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>VoiceType Pro — speech engine host</title>
+</head>
+<body>
+  <!--
+    The offscreen document exists because an MV3 service worker cannot use getUserMedia or
+    SpeechRecognition. It hosts the microphone, the recognition engines and the text pipeline.
+    No remote code, no inline script: CSP is "script-src 'self'".
+  -->
+  <script type="module" src="offscreen.js"></script>
+</body>
+</html>
