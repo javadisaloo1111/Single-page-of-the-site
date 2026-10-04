@@ -428,7 +428,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   if (previousSession.active && previousSession.sessionId) {
     try { await sendToOffscreen({ type: "OFFSCREEN_STOP", sessionId: previousSession.sessionId }); } catch { /* the old offscreen document may already be gone */ }
   }
-  await publishState({ active: false, status: "ready", engine: "webspeech", interimText: "", fallbackReason: "", error: "" }, { sendToTab: false });
+  await publishState({ active: false, status: "ready", engine: "webspeech", language: settings.language, interimText: "", fallbackReason: "", error: "" }, { sendToTab: false });
   await chrome.action.setBadgeText({ text: "" });
 });
 

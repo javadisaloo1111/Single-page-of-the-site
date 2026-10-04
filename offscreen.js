@@ -96,7 +96,7 @@ class WebSpeechEngine {
     this.stoppedByUser = false;
     this.active = true;
     this.recognition = new Recognition();
-    this.recognition.lang = getWebSpeechLanguage(this.settings.language, navigator.language);
+    this.recognition.lang = getWebSpeechLanguage(this.settings.language);
     this.recognition.continuous = Boolean(this.settings.continuousMode);
     this.recognition.interimResults = Boolean(this.settings.interimResults);
     this.recognition.maxAlternatives = 1;

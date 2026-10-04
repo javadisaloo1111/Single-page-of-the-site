@@ -32,7 +32,8 @@ function renderStatus(state = {}) {
   $("#statusCard").dataset.state = status;
   $("#statusLabel").textContent = title;
   $("#statusSub").textContent = subtitle;
-  $("#languageBadge").textContent = state.language && state.language !== "auto" ? state.language.toUpperCase() : (currentSettings?.language === "auto" ? "Auto · Chrome" : (currentSettings?.language || "Auto").toUpperCase());
+  const language = state.language === "auto" ? currentSettings?.language : state.language;
+  $("#languageBadge").textContent = String(language || currentSettings?.language || "fa").toUpperCase();
   $("#toggleBtn").classList.toggle("stop", Boolean(state.active));
   $("#toggleBtn").disabled = ["starting", "stopping"].includes(status);
   $("#toggleBtn").querySelector("span:last-child").textContent = state.active ? "توقف تایپ صوتی" : "شروع تایپ صوتی";

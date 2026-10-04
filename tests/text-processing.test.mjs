@@ -50,6 +50,6 @@ test("adds conservative sentence punctuation and detects likely Persian question
 test("sanitizes settings and clamps storage sizes", () => {
   const result = sanitizeSettings({ historyLimit: 5000, language: "xx", customVocabulary: [{ word: "  x ", replacement: " Y " }, null] });
   assert.equal(result.historyLimit, 200);
-  assert.equal(result.language, "auto");
+  assert.equal(result.language, "fa");
   assert.deepEqual(result.customVocabulary, [{ word: "x", replacement: "Y" }]);
 });

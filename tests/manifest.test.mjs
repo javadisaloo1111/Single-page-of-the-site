@@ -7,7 +7,7 @@ const manifest = JSON.parse(await readFile(new URL("../manifest.json", import.me
 
 test("uses only Chrome's built-in Web Speech API with a least-privilege MV3 manifest", () => {
   assert.equal(manifest.manifest_version, 3);
-  assert.equal(manifest.version, "1.1.0");
+  assert.equal(manifest.version, "1.2.0");
   assert.equal(manifest.background.type, "module");
   assert.ok(manifest.permissions.includes("offscreen"));
   assert.ok(manifest.commands["toggle-dictation"].global);
@@ -17,9 +17,12 @@ test("uses only Chrome's built-in Web Speech API with a least-privilege MV3 mani
   assert.equal(manifest.optional_host_permissions, undefined);
   assert.ok(manifest.content_security_policy.extension_pages.includes("script-src 'self'"));
   assert.equal(DEFAULT_SETTINGS.engine, "webspeech");
-  assert.equal(getWebSpeechLanguage("auto", "en-GB"), "en-US");
-  assert.equal(getWebSpeechLanguage("auto", "ar-EG"), "ar-SA");
-  assert.equal(getWebSpeechLanguage("auto", "de-DE"), "fa-IR");
+  assert.equal(DEFAULT_SETTINGS.language, "fa");
+  assert.equal(getWebSpeechLanguage("auto"), "fa-IR");
+  assert.equal(getWebSpeechLanguage("fa"), "fa-IR");
+  assert.equal(getWebSpeechLanguage("en"), "en-US");
+  assert.equal(getWebSpeechLanguage("ar"), "ar-SA");
+  assert.equal(sanitizeSettings({ language: "auto" }).language, "fa");
   const migrated = sanitizeSettings({ engine: "soniox", tokenBrokerUrl: "https://example.test", brokerAccessToken: "obsolete" });
   assert.equal(migrated.engine, "webspeech");
   assert.equal("tokenBrokerUrl" in migrated, false);

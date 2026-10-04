@@ -9,7 +9,7 @@ export const BUILTIN_VOCABULARY = [
 
 export const DEFAULT_SETTINGS = Object.freeze({
   engine: "webspeech",
-  language: "auto",
+  language: "fa",
   continuousMode: true,
   autoRestart: true,
   interimResults: true,
@@ -58,7 +58,8 @@ export function sanitizeSettings(raw = {}) {
   const settings = { ...DEFAULT_SETTINGS, ...raw };
   // Migrate older stored configurations to Chrome's native Web Speech API only.
   settings.engine = "webspeech";
-  settings.language = ["auto", "fa", "en", "ar"].includes(settings.language) ? settings.language : "auto";
+  // Old "auto" values followed the browser UI locale, which could send Persian speech to an English recognizer.
+  settings.language = ["fa", "en", "ar"].includes(settings.language) ? settings.language : "fa";
   settings.digitStyle = ["fa", "en"].includes(settings.digitStyle) ? settings.digitStyle : "fa";
   settings.historyLimit = Math.min(200, Math.max(10, Number.parseInt(settings.historyLimit, 10) || 50));
   settings.customVocabulary = Array.isArray(settings.customVocabulary)
@@ -287,9 +288,8 @@ export function getSpeechErrorMessage(errorCode) {
   return "در تشخیص گفتار خطایی رخ داد. دوباره تلاش کنید یا مجوزهای Chrome و میکروفون را بررسی کنید.";
 }
 
-export function getWebSpeechLanguage(language = "auto", browserLanguage = "fa-IR") {
+export function getWebSpeechLanguage(language = "fa") {
   if (language === "en") return "en-US";
   if (language === "ar") return "ar-SA";
-  if (language === "fa") return "fa-IR";
-  return /^en/i.test(browserLanguage) ? "en-US" : /^ar/i.test(browserLanguage) ? "ar-SA" : "fa-IR";
+  return "fa-IR";
 }
